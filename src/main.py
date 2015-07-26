@@ -71,13 +71,6 @@ ssc = StreamingContext(sc, 1)
 # and broadcast to each word node
 inverted_index_var = sc.broadcast(load_index(INDEX_FILE))
 
-# Create a DStream that will connect to hostname:port, like localhost:9999
-# each line is a query, which contains some keywords spliting with spaces
-# assuming line is not empty
-lines = ssc.socketTextStream(QUERY_ADDR, QUERY_PORT)
-
-keywords = lines.map(lambda line: line.split())
-
 def search(keywords):
     inverted_index = inverted_index_var.value
 
@@ -104,14 +97,27 @@ def search(keywords):
 
     return list(result)
 
+# Create a DStream that will connect to hostname:port, like localhost:9999
+# each line is a query, which contains some keywords spliting with spaces
+# assuming line is not empty
+lines = ssc.socketTextStream(QUERY_ADDR, QUERY_PORT)
+
+# convert keywords to list
+keywords = lines.map(lambda line: line.split())
+
+# do search 
+# result is list of tuples of position
 search_result = keywords.map(search)
-# str_result = search_result.map(lambda x: str.encode(str(x)))
+
+# convert result to ascii string
 str_result = search_result.map(lambda x: str.encode(",".join([ format(z, "x") for y in x for z in y ])))
-    
+
+# for debug
 str_result.pprint()
 
-#keywords.pprint()
+# send result to result receiving server
 str_result.foreachRDD(lambda rdd: rdd.foreachPartition(send_result))
+
 
 
 # Start the computation
