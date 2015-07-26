@@ -11,7 +11,9 @@
  #  E-mail: hjm211324@gmail.com
  #  Date: Jul 26, 2015
  #  Time: 13:48:16
- #  Description: 
+ #  Description: extract jpeg files from tar 
+ #               and pack them into a big binary file
+ #               create inverted index at the same time
 ###############################################################################
 
 import os
