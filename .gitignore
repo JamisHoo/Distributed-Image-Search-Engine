@@ -8,3 +8,6 @@ pre
 # vim
 *.swp
 
+
+# Python
+*.pyc
