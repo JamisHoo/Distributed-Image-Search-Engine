@@ -27,14 +27,13 @@ QUERY_ADDR = "localhost"
 QUERY_PORT = 20000
 
 
-# load inverted index
-# TODO: broadcast this?
-inverted_index = index.load_index(INDEX_FILE)
-
-
 # Create a StreamingContext and batch interval of 1 second
 sc = SparkContext(appName = "ImageSearch")
 ssc = StreamingContext(sc, 1)
+
+# load inverted index
+# and broadcast to each word node
+inverted_index_var = sc.broadcast(index.load_index(INDEX_FILE))
 
 # Create a DStream that will connect to hostname:port, like localhost:9999
 # each line is a query, which contains some keywords spliting with spaces
@@ -43,13 +42,39 @@ lines = ssc.socketTextStream(QUERY_ADDR, QUERY_PORT)
 
 keywords = lines.map(lambda line: line.split())
 
-str_keywords = keywords.map(lambda keys: ",".join(keys))
-bytes_keywords = str_keywords.map(lambda s: str.encode(str(s)))
+def search(keywords):
+    inverted_index = inverted_index_var.value
 
-bytes_keywords.pprint()
+    print("*" * 50)
+    print(keywords)
+    print("*" * 50)
+
+    result = None
+
+    for keyword in keywords:
+        # intermediate result of this keyword
+        inter_result = inverted_index.get(keyword)
+        
+        # cannot find this keyword
+        if inter_result == None:
+            break
+        
+        # merge result of each keyword
+        if result == None:
+            result = set(inter_result)
+        else:
+            result &= set(inter_result)
+
+
+    return list(result)
+
+search_result = keywords.map(search)
+str_result = search_result.map(lambda x: str.encode(str(x)))
+    
+str_result.pprint()
 
 #keywords.pprint()
-bytes_keywords.foreachRDD(lambda rdd: rdd.foreachPartition(send_result.send))
+str_result.foreachRDD(lambda rdd: rdd.foreachPartition(send_result.send))
 
 
 # Start the computation
