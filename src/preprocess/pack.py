@@ -24,8 +24,6 @@ WORDS_DICTIONARY = "words"
 INVERTED_INDEX = "index"
 COMPRESS_DIR = "COMPRESS/"
 BLOCK_SIZE = int(1024 * 1024 * 1024 * 10) # 10 GiB
-# tolerate 1 GiB empty space at the end of each block
-MIN_BLOCK_SIZE = int(BLOCK_SIZE * 0.9) # 9 GiB
 
 # check files and dirs
 if not os.path.isfile(INVERTED_INDEX):
@@ -63,7 +61,7 @@ if len(existing_compress_blocks):
     last_block_filename = existing_compress_blocks[-1]
     last_block_size = os.path.getsize(COMPRESS_DIR + "/" + last_block_filename)
     compress_block_counter = int(last_block_filename, 16) 
-    if last_block_size > MIN_BLOCK_SIZE:
+    if last_block_size >= BLOCK_SIZE:
         compress_block_counter += 1
     # we use 8 digit hex number as filename, in the range of uint32
     block_filename = format(compress_block_counter, "08x")
