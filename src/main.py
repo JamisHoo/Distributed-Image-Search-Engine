@@ -22,6 +22,7 @@ from pyspark.streaming import StreamingContext
 import socket
 
 INDEX_FILE = "../imagenet/index"
+# INDEX_FILE = "index"
 
 QUERY_ADDR = "localhost"
 QUERY_PORT = 20000
@@ -94,12 +95,16 @@ def search(keywords):
             result &= set(inter_result)
 
 
-    return list(result)
+    if result == None:
+        return list()
+    else:
+        return list(result)
 
 # Create a DStream that will connect to hostname:port, like localhost:9999
 # each line is a query, which contains some keywords spliting with spaces
 # assuming line is not empty
 lines = ssc.socketTextStream(QUERY_ADDR, QUERY_PORT)
+
 
 # convert keywords to list
 keywords = lines.map(lambda line: line.split())
