@@ -21,6 +21,9 @@ from pyspark.streaming import StreamingContext
 
 import socket
 
+
+# TODO: rewrite this file
+
 INDEX_FILE = "../imagenet/index"
 # INDEX_FILE = "index"
 
