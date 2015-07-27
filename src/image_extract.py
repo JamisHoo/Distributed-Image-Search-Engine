@@ -32,6 +32,7 @@ RESULT_RECEIVE_PORT = 20004
 HDFS_HOST = "localhost:50070"                                                   
 HDFS_IMAGENET = "/imagenet/"
 
+# TODO: test with more threads
 N_THREADS = 1
 
 
