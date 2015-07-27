@@ -32,14 +32,13 @@ RESULT_PORT = 20001
 def send_result(rdd_iter):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((RESULT_ADDR, RESULT_PORT))
-
     try:
         for record in rdd_iter:
             sock.send(record)
     except Exception as e:
         print("Disconnect")
         print(e)
-
+        
     sock.close()
 
 def load_index(index_filename):
