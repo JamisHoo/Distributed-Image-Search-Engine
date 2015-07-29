@@ -11,122 +11,80 @@
  #  E-mail: hjm211324@gmail.com
  #  Date: Jul 27, 2015
  #  Time: 22:26:51
- #  Description: 
+ #  Description: accecpt HTTP Get request 
+ #               extract image from HDFS
+ #               send response to client
 ###############################################################################
-
-import functools
-import time
-import socket
-import asyncio
-import threading
-from queue import Queue
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import re
 import pyhdfs
+import time
+
+hostName = "0.0.0.0"
+hostPort = 10005
+
+hdfs_image_path = "/imagenet/"
+hdfs_host = "localhost:50070"
+
+path_pattern = re.compile("^/[^?]*\?block_no=([0-9a-f]*)&offset=([0-9a-f]*)&length=([0-9a-f]+)$", flags = re.IGNORECASE);
+
+hdfs_client = pyhdfs.HdfsClient(hosts = hdfs_host)
 
 
-LISTEN_ADDR = "localhost"
-LISTEN_PORT = 20003
+class ImageServer(BaseHTTPRequestHandler):
 
-RESULT_RECEIVE_ADDR = "localhost"
-RESULT_RECEIVE_PORT = 20004
+    def do_GET(self):
+        global path_pattern
 
-HDFS_HOST = "localhost:50070"                                                   
-HDFS_IMAGENET = "/imagenet/"
+        match_obj = path_pattern.match(self.path)
+        if not match_obj or len(match_obj.groups()) != 3:
+            self.send_reject()
+        else:
+            self.send_image(match_obj.groups())
 
-# TODO: test with more threads
-N_THREADS = 1
+    def send_reject(self):
+        self.send_response(400)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        messages = [
+            "Format of request URL: /?block_no=[hex]&offset=[hex]&length=[hex] ",
+            "[hex] is a number in hexadecimal without leading 0x, case insensitive. ",
+            "",
+            "e.g.",
+            "http://192.168.1.100:10005/?block_no=4&offset=214428b48&length=d282",
+            "http://59.66.130.35:10005/?block_no=1&offset=20adb4722&length=3239c"
+        ]
+        self.wfile.write("\n".join(messages).encode("utf-8"))
 
+    def send_image(self, signature):
+        image = self.extract_image(signature)
 
-result_receive_sock = None
-result_receive_sock_lock = None
-task_queue = None
-hdfs_client = None
+        self.send_response(200)
+        self.send_header("Content-type", "image/jpeg")
+        self.end_headers()
+        self.wfile.write(image)
 
-# extract image and send to result receiver
-def extractFromHdfs(task):
-    # block No, offset and length determine an image
-    block_no, offset, length = map(functools.partial(int, base = 16), task.split(","))
+    def extract_image(self, signature):
+        global hdfs_client
 
-    # access hdfs
-    image = hdfs_client.open(HDFS_IMAGENET + format(block_no, "08x"), offset = offset, length = length).read()
+        block_no = int(signature[0], 16)
+        offset = int(signature[1], 16)
+        length = int(signature[2], 16)
 
-    print("get image length of", len(image))
+        image = hdfs_client.open(hdfs_image_path + format(block_no, "08x"), offset = offset, length = length).read()
 
-    with result_receive_sock_lock:
-        # send
-        result_receive_sock.send(format(len(image), "08x").encode("ascii") + image)
-
-
-# thread try to get task from queue
-def thread_worker():
-    while True:
-        task = task_queue.get()
-        image = extractFromHdfs(task)
-        task_queue.task_done()
-
-# accept TCP connections, receive data, put data into task queue
-class ImageExtractor(asyncio.Protocol):
-    def __init__(self):
-        self._buff = ""
-
-    # new connections
-    def connection_made(self, transport):
-        peername = transport.get_extra_info('peername')
-        print('Connection from {}'.format(peername))
-        self.transport = transport
-
-    # process received data
-    def data_received(self, data):
-        print("data received", len(data))
-        self._buff += data.decode("ascii")
-
-        # data is splited with \n
-        pos = self._buff.find("\n")
-        while pos != -1:
-            line = self._buff[: pos]
-            print("Line: ", line)
-            task_queue.put(line)
-
-            self._buff = self._buff[pos + 1: ]
-            pos = self._buff.find("\n")
-
-
-# initialize connection to result receiving peer
-result_receive_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-result_receive_sock.connect((RESULT_RECEIVE_ADDR, RESULT_RECEIVE_PORT))
-result_receive_sock_lock = threading.Lock()
-
-
-# initialize hdfs client
-hdfs_client = pyhdfs.HdfsClient(hosts = HDFS_HOST) 
+        return image
 
 
 
-# initialize multithread and queue
-task_queue = Queue()
-for i in range(N_THREADS):
-    t = threading.Thread(target = thread_worker)
-    t.daemon = True
-    t.start()
+myServer = HTTPServer((hostName, hostPort), ImageServer)
+print(time.asctime(), "Server Starts - %s:%s" % (hostName, hostPort))
 
-
-# initialize accept server
-loop = asyncio.get_event_loop()
-# each client connection will create a new protocol instance
-coro = loop.create_server(ImageExtractor, LISTEN_ADDR, LISTEN_PORT)
-server = loop.run_until_complete(coro)
-# serve requests until CTRL+c is pressed
-print('Serving on {}'.format(server.sockets[0].getsockname()))
 try:
-    loop.run_forever()
+    myServer.serve_forever()
 except KeyboardInterrupt:
     pass
 
+myServer.server_close()
+print(time.asctime(), "Server Stops - %s:%s" % (hostName, hostPort))
 
-
-# close the accept server
-server.close()
-loop.run_until_complete(server.wait_closed())
-loop.close()
-
-# close connection to result receiving server
-result_receive_sock.close()
