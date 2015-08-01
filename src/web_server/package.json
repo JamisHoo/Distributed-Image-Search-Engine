@@ -1,0 +1,24 @@
+{
+  "name": "web_server",
+  "version": "1.0.0",
+  "description": "web server for Distributed Image Search Engine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/JamisHoo/Distributed-Image-Search-Engine.git"
+  },
+  "keywords": [
+    "distributed",
+    "image",
+    "search"
+  ],
+  "author": "Jamis Hoo, Zichuan Lin, Zailong Li",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JamisHoo/Distributed-Image-Search-Engine/issues"
+  },
+  "homepage": "https://github.com/JamisHoo/Distributed-Image-Search-Engine#readme"
+}
