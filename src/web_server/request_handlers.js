@@ -16,20 +16,16 @@ var path = require("path");
 var fs = require("fs");
 var net = require("net");
 
+var computing_count = 0;
+var computing_connections = [];
+var computing_hosts = [];
+var computing_hash = {};
 
-var tcp_count = 0;
-var tcp_connections = [];
-var tcp_hosts = [];
-var tcp_hash = {};
+var storage_count = 0;
+var storage_connections = [];
+var storage_hosts = [];
+var storage_hash = {};
 
-var query_counter = 0;
-var query_hash = {};
-
-function root(query, response) {
-    response.writeHead(200, { "Content-Type": "text/plain" });
-    response.write("Hello I'm root. ");
-    response.end();
-}
 
 function resources(pathname, response) {
     function respond_file(abs_path) {
@@ -59,7 +55,7 @@ function resources(pathname, response) {
                 }
                 fs.readFile(abs_path, function(err, data) { response.end(data); });
             } else {
-                console.log(abs_path + "not exists. ");
+                console.log(abs_path + " not exists. ");
                 response.writeHead(404, {"Content-Type": "text/html"});
                 response.end("<h1>404 Not Found</h1> ");
             }
@@ -69,128 +65,68 @@ function resources(pathname, response) {
     respond_file(__dirname + pathname);
 }
 
-function search(query, response) {
-    // no worker is working
-    if (tcp_count == 0) {
-        response.writeHead(503, { "Content-Type": "text/plain" });
-        response.write("No worker is working. ");
-        response.end();
-        return;
-    }
-    
-    var query_valid = false;
-    // keywords non-empty
-    if ("keywords" in query) {
-        // extract keywords
-        var keywords = query["keywords"].replace(/\s/g, '');
-        
-        // if keywords only consists of whitespaces
-        if (keywords.replace(/\+/g, '').length != 0) {
-            // send query to worker
-            rand = Math.floor(Math.random() * tcp_count);
-            worker = tcp_connections[rand];
-            worker.write(query_counter + ":" + keywords + "\n", "UTF8");
-            
-            query_hash[query_counter] = response;
-            ++query_counter;
-            
-            query_valid = true;
-        }
-    }
-    
-    if (!query_valid) {
-        response.writeHead(200, { "Content-Type": "text/plain" });
-        response.write("Hello I'm search. ");
-        response.end();
-    }
-}
-
-function newworker(query, response) {
+function new_computing_node(query, response) {
 
     function create_worker(worker_addr, worker_port) {
         var worker = new net.Socket();
 
         worker.connect(worker_port, worker_addr, function() {
             var worker_host = worker_addr + ":" + worker_port;
-            tcp_connections[tcp_count] = worker;
-            tcp_hosts[tcp_count] = worker_host;
-            tcp_hash[worker_host] = tcp_count;
-            ++tcp_count;
+            computing_connections[computing_count] = worker;
+            computing_hosts[computing_count] = worker_host;
+            computing_hash[worker_host] = computing_count;
+            ++computing_count;
 
+            /*
             console.log("new connection: ");
             console.log(worker_host);
-            console.log("tcp_count");
-            console.log(tcp_count);
-            console.log("tcp connections:");
-            console.log(tcp_connections.length);
-            console.log("tcp hosts: ");
-            console.log(tcp_hosts);
-            console.log("tcp hash: ");
-            console.log(tcp_hash);
+            console.log("computing count");
+            console.log(computing_count);
+            console.log("computing connections:");
+            console.log(computing_connections.length);
+            console.log("computing hosts: ");
+            console.log(computing_hosts);
+            console.log("computing hash: ");
+            console.log(computing_hash);
+            */
         });
 
         worker.on("error", function(err) { console.log(err); });
         worker.on("timeout", function(timeout) { console.log(timeout); });
-
-        worker.on("data", function(data) {
-            console.log("Receive: " + data); 
-            
-            var colon_index = data.toString().indexOf(":");
-            if (colon_index == -1) 
-                return;
-
-            var query_index = parseInt(data.toString().substring(0, colon_index));
-            var query_result = data.toString().substring(colon_index + 1);
-
-            var response = query_hash[query_index];
-            if (response) {
-
-                // TODO: for test
-                // read html 
-                var html_content = fs.readFileSync("static/index.html");
-                response.writeHead(200, { "Content-Type": "text/html" });
-                response.write(html_content);
-                response.end()
-                return;
-
-
-                response.writeHead(200, { "Content-Type": "text/plain" });
-                response.write(query_result);
-                response.end();
-                delete query_hash[query_index];
-            }
-        });
+        worker.on("data", function(data) { console.log("Receive: " + data); });
 
         worker.on("close", function() {
             var worker_host = worker_addr + ":" + worker_port;
-            var index = tcp_hash[worker_host];
+            var index = computing_hash[worker_host];
 
             if (!(index >= 0)) 
                 return;
 
-            delete tcp_connections[index];
-            delete tcp_hosts[index];
-            delete tcp_hash[worker_host];
+            delete computing_connections[index];
+            delete computing_hosts[index];
+            delete computing_hash[worker_host];
 
-            --tcp_count;
-            if (index != tcp_count) {
-                tcp_connections[index] = tcp_connections[tcp_count];
-                delete tcp_connections[tcp_count];
-                tcp_hosts[index] = tcp_hosts[tcp_count];
-                delete tcp_connections[tcp_count];
-                tcp_hash[tcp_hosts[tcp_count]] = index;
+            --computing_count;
+            if (index != computing_count) {
+                computing_connections[index] = computing_connections[computing_count];
+                delete computing_connections[computing_count];
+                computing_hosts[index] = computing_hosts[computing_count];
+                delete computing_connections[computing_count];
+                computing_hash[computing_hosts[computing_count]] = index;
             }
 
+            /*
             console.log("Connection closed. ");
             console.log(worker_host);
-            console.log("tcp_count");
-            console.log(tcp_count);
-            console.log("tcp connections:");
-            console.log(tcp_connections.length);
-            console.log("tcp hosts: ");
-            console.log(tcp_hosts);
-            console.log("tcp hash: ");
-            console.log(tcp_hash);
+            console.log("computing count");
+            console.log(computing_count);
+            console.log("computing connections:");
+            console.log(computing_connections.length);
+            console.log("computing hosts: ");
+            console.log(computing_hosts);
+            console.log("computing hash: ");
+            console.log(computing_hash);
+            */
         });
     }
     
@@ -199,7 +135,7 @@ function newworker(query, response) {
         var worker_host = query["addr"] + ":" + query["port"];
 
         // new worker 
-        if (!(worker_host in tcp_hash)) {
+        if (!(worker_host in computing_hash)) {
             create_worker(query["addr"], query["port"]);
 
             response.writeHead(200, { "Content-Type": "text/plain" });
@@ -219,7 +155,105 @@ function newworker(query, response) {
     }
 }
 
-exports.root = root;
+function new_storage_node(query, response) {
+
+    function create_worker(worker_addr, worker_port) {
+        var worker = new net.Socket();
+
+        worker.connect(worker_port, worker_addr, function() {
+            var worker_host = worker_addr + ":" + worker_port;
+            storage_connections[storage_count] = worker;
+            storage_hosts[storage_count] = worker_host;
+            storage_hash[worker_host] = storage_count;
+            ++storage_count;
+
+            console.log("new connection: ");
+            console.log(worker_host);
+            console.log("storege count");
+            console.log(storage_count);
+            console.log("storage_connections:");
+            console.log(storage_connections.length);
+            console.log("storage_hosts: ");
+            console.log(storage_hosts);
+            console.log("storage_hash: ");
+            console.log(storage_hash);
+        });
+
+        worker.on("error", function(err) { console.log(err); });
+        worker.on("timeout", function(timeout) { console.log(timeout); });
+        worker.on("data", function(data) { console.log("Receive: " + data); });
+
+        worker.on("close", function() {
+            var worker_host = worker_addr + ":" + worker_port;
+            var index = storage_hash[worker_host];
+
+            if (!(index >= 0)) 
+                return;
+
+            delete storage_connections[index];
+            delete storage_hosts[index];
+            delete storage_hash[worker_host];
+
+            --storage_ount;
+            if (index != storage_count) {
+                storage_connections[index] = storage_connections[storage_count];
+                delete storage_connections[storage_count];
+                storage_hosts[index] = storage_hosts[storage_count];
+                delete storage_connections[storage_count];
+                storage_hash[storage_hosts[storage_count]] = index;
+            }
+
+            console.log("Connection closed. ");
+            console.log(worker_host);
+            console.log("storage_count");
+            console.log(storage_count);
+            console.log("storage_connections:");
+            console.log(storage_connections.length);
+            console.log("storage_hosts: ");
+            console.log(storage_hosts);
+            console.log("storage_hash: ");
+            console.log(storage_ash);
+        });
+    }
+    
+    // new worker with address and port provided
+    if ("addr" in query && "port" in query) {
+        var worker_host = query["addr"] + ":" + query["port"];
+
+        // new worker 
+        if (!(worker_host in storage_hash)) {
+            create_worker(query["addr"], query["port"]);
+
+            response.writeHead(200, { "Content-Type": "text/plain" });
+            response.write("Try to connect to " + worker_host);
+            response.end();
+        // worker alrady exists
+        } else {
+            response.writeHead(400, { "Content-Type": "text/plain" });
+            response.write("Worker " + worker_host + " already exists. ");
+            response.end();
+        }
+    // lack of address or port
+    } else {
+        response.writeHead(400, { "Content-Type": "text/plain" });
+        response.write("Address or port isn't provided. ");
+        response.end();
+    }
+}
+
+function overview(query, response) {
+    response.writeHead(200, { "Content-Type": "text/plain" });
+    response.write("Computing nodes: \n");
+    for (var key in computing_hash) 
+        response.write(computing_hosts[computing_hash[key]] + "\n");
+    response.write("\n");
+    response.write("Storage nodes: \n");
+    for (var key in storage_hash)
+        response.write(storage_hosts[storage_hash[key]] + "\n");
+    response.end();
+}
+
 exports.resources = resources;
-exports.search = search;
-exports.newworker = newworker;
+exports.new_computing_node = new_computing_node;
+exports.new_storage_node = new_storage_node;
+exports.overview = overview;

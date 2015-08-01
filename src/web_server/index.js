@@ -18,9 +18,9 @@ var router = require("./router");
 var request_handlers = require("./request_handlers");
 
 var handle ={}
-handle["/"] = request_handlers.root;
 handle["/static"] = request_handlers.resources;
-handle["/search"] = request_handlers.search;
-handle["/newworker"] = request_handlers.newworker;
+handle["/newcomputingnode"] = request_handlers.new_computing_node;
+handle["/newstoragenode"] = request_handlers.new_storage_node;
+handle["/overview"] = request_handlers.overview;
 
 server.start(router.route, handle);
