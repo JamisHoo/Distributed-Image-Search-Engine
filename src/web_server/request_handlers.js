@@ -111,7 +111,7 @@ function new_computing_node(query, response) {
                 computing_connections[index] = computing_connections[computing_count];
                 delete computing_connections[computing_count];
                 computing_hosts[index] = computing_hosts[computing_count];
-                delete computing_connections[computing_count];
+                delete computing_hosts[computing_count];
                 computing_hash[computing_hosts[computing_count]] = index;
             }
 
@@ -199,7 +199,7 @@ function new_storage_node(query, response) {
                 storage_connections[index] = storage_connections[storage_count];
                 delete storage_connections[storage_count];
                 storage_hosts[index] = storage_hosts[storage_count];
-                delete storage_connections[storage_count];
+                delete storage_hosts[storage_count];
                 storage_hash[storage_hosts[storage_count]] = index;
             }
 
