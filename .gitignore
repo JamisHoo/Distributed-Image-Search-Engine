@@ -1,6 +1,7 @@
 # private dir
 imagenet
 pre
+src/web_server/node_modules/
 
 # OS X
 *.DS_Store
