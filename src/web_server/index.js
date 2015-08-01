@@ -10,7 +10,7 @@
  *  E-mail: hjm211324@gmail.com
  *  Date: Jul 31, 2015
  *  Time: 23:56:29
- *  Description: 
+ *  Description: main
  *****************************************************************************/
 
 var server = require("./server");
