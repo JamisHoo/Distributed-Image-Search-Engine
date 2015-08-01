@@ -19,6 +19,7 @@ var request_handlers = require("./request_handlers");
 
 var handle ={}
 handle["/"] = request_handlers.root;
+handle["/static"] = request_handlers.resources;
 handle["/search"] = request_handlers.search;
 handle["/newworker"] = request_handlers.newworker;
 

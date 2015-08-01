@@ -1,0 +1,164 @@
+<html>
+    <head>
+        <meta charset="uft-8">
+        <link rel="stylesheet" href="static/semantic/packaged/javascript/semantic.min.js">
+        <link rel="stylesheet" href="static/semantic/packaged/css/semantic.min.css">
+        <title>Image Search Engine</title>
+        <meta name="description" content="">
+        <meta name=viewport content="width=device-width, initial-scale=1">
+        <meta name="mobile-web-app-capable" content="yes">
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+        <link rel="stylesheet" href="static/jquery-2.1.1.js"> 
+        <link rel="stylesheet" href="static/jquery.lazyload.js"> 
+    </head>
+    <body>
+        <h3 class="ui teal inverted menu">
+                <form method="post" action="{{url_for('search') }}" id="search_form" >
+                        <div class="ui large action input">
+                            <input type="text" placeholder="Search..." name="word" id="submit" style="height:50px; overflow-x:auto;">
+                            <input type="hidden" name="user_id" value="{{user_id}}">
+                            <a class="ui blue button" onclick="Search()">Search<i class="search icon"></i></a>
+                        </div>
+                </form>
+        </h3>
+        <div class="ui horizontal icon divider">
+        <i class="circular cloud icon"></i>
+        </div>
+        <div class="ui three column grid">
+            <div class="five wide column">
+                <p><FONT size=10 color="#FF7E7E"><i class="file outline icon"></i><STRONG>Choose</STRONG></FONT><FONT size=2><strong> an image</strong></FONT></p>
+                <div class="ui segment attached" style="height:600px; overflow-x:auto; display: inline-block; position:relative" id="view" onScroll="viewscroll()">
+                    <div class="ui small images" id="image_container"> 
+                        <!--
+                        {% if imageidx %}
+                        {% for i in image_number %}
+                        <img class="lazy" id="h" src="http://192.168.1.100:10005/?block_no={{imageidx.block_no}}&offset={{imageidx.offset}}&length={{imageidx.length}}" height="100" width="100">
+                        {% endfor %}
+                        <script>
+                            var img = document.getElementById("h");
+                            var src = img.src;
+                            alert(src);
+                        </script>
+                        {% endif %}
+                        -->
+                    </div>
+                    <div id="loading" style="position:relative; "></div>
+
+                </div>
+                
+            </div>
+            <div class="six wide column">
+                <p><FONT size=10 color="#FF7E7E"><i class="zoom in icon"></i><STRONG>View</STRONG></FONT><FONT size=2><STRONG> image</STRONG></FONT></p>
+                <div class="ui segment"  style="height:600px;">
+                <!--can delete this line-->
+                <!--can delete this line-->
+                <img  class="rounded ui image" src="static/1.jpg"style="height:580px; width:580px;">
+                </div>
+            </div>
+            <div class="five wide column">
+                <p><FONT size=10 color="#FF7E7E"><i class="cart icon"></i><STRONG>Use</STRONG></FONT><FONT size=2><STRONG>it the way you want</STRONG></FONT></p>
+
+                <div class="ui segment">
+                <!--can delete this line
+                <div class="ui active inverted dimmer"><div class="ui medium text loader"><STRONG>Loading</STRONG></div></div>
+                can delete this line-->
+                        <div class="ui red form segment">
+                            <div class="inline fields">
+                                <div class="field">
+                                    <FONT><STRONG>Image Download</STRONG></FONT>
+                                </div>
+                                <div class="field">
+                                    <img class="small ui image" src="static/1.jpg" style="vertical-align:middle">
+                                </div>
+                                <div class="field">
+                                    <div class="small ui green button" onClick="Download()">Download</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ui red form segment">
+                            <div class="inline fields">
+                                <div class="field">
+                                    <FONT><STRONG>Link</STRONG></FONT>
+                                </div>
+                                <div class="field">
+                                    <input type="text" name="link" id="link_text">
+                                </div>
+                                <div class="field">
+                                    <div class="small ui green button" onClick="Print()">Copy</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" id="loaded_counter" value="0">
+        <script>
+            var idx_array;
+            function Submit() {
+                var idxstring = "{{imageidx}}" ;
+                var idx = idxstring.split('|');
+                //alert(idx.length);
+                idx_array = new Array(idx.length);
+                for (var i = 0 ; i < idx.length; ++i) {
+                    //idx_array[i] = new Array(3);
+                    idx_array[i] = idx[i].split(',');
+                }
+                load();
+            }
+            function load() {
+                var curr = parseInt($("#loaded_counter").val());
+                var end = curr + 400;
+                var ToAdd = "";
+                //alert(curr);
+                //alert(end);
+                if (end > idx_array.length)  end = idx_array_length;
+                for (var i = curr; i <= end; ++i) {
+                    ToAdd += "<img src='http://192.168.1.100:10005/?block_no="+idx_array[i][0]
+                    +"&offset="+idx_array[i][1]
+                    +"&length="+idx_array[i][2] + "'>";
+                }
+                //alert(ToAdd);
+                var now = $("#image_container").html(); 
+                $("#image_container").html(now + ToAdd); 
+                curr = end + 401;
+                $("#loaded_counter").val(String(curr));
+                $("#loading").html("");
+            }
+            function Search() {
+                /*var objurl = $("#search_form").attr("action");
+                var term = $("#submit").val();
+                $.post(objurl, {
+                    word:term
+                }, function (data) {
+                    document.write(data);
+                });*/
+            }
+            function Print(){
+                var LINK=document.getElementById("link_text"); 
+                LINK.select(); 
+                document.execCommand("Copy");
+                alert("Copied!"); 
+            }
+            function viewscroll(){
+                var a=document.getElementById("view");
+                var f=a.clientHeight;
+                console.log("clientHeight:"+f);
+                var g=a.scrollTop;
+                console.log("scrollTop:"+g);
+                var h = a.scrollHeight;
+                console.log("scrollHeight:"+h);
+                if(f+g==h)
+                {
+                    $("#loading").html("<div class='ui active inverted dimmer' ><div class='ui medium text loader'><STRONG>Loading</STRONG></div></div>");
+                    //alert("The end!");
+                    load();
+                }
+            }
+            {% if imageidx %}  Submit(){% endif %}  
+        </script>
+    </body>
+</html>

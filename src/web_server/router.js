@@ -15,14 +15,17 @@
 
 
 function route(handle, pathname, query, response) {
+    // access static resources
+    if (pathname.indexOf("/static/") == 0) {
+        handle["/static"](pathname, response); 
     // find function to handle 
-    if (typeof handle[pathname] === 'function') {
+    } else if (typeof handle[pathname] === 'function') {
         handle[pathname](query, response);
     // if no function handle this path
     } else {
         // 404
-        response.writeHead(404, { "Content-Type": "text/plain"} );
-        response.write("404 Not found. ");
+        response.writeHead(404, { "Content-Type": "text/html"} );
+        response.write("<h1>404 Not Found</h1>");
         response.end();
     }
 }
