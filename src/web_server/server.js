@@ -10,7 +10,7 @@
  *  E-mail: hjm211324@gmail.com
  *  Date: Jul 31, 2015
  *  Time: 23:56:29
- *  Description: 
+ *  Description: server start, send request to router
  *****************************************************************************/
 
 var http = require("http");
@@ -27,13 +27,6 @@ function start(route, handle) {
 
         // send to router
         route(handle, pathname, query, response);
-        /*
-        var response_content = route(handle, pathname, query)
-
-        response.writeHead(response_content[0],{ "Content-Type": "text/plain"});
-        response.write(response_content[1]);
-        response.end();
-        */
     }
 
     http.createServer(onRequest).listen(8888);
