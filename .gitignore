@@ -12,3 +12,4 @@ src/web_server/node_modules/
 
 # Python
 *.pyc
+*.pyo
