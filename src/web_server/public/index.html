@@ -131,15 +131,15 @@
             }
             function load() {
                 var curr = parseInt($("#loaded_counter").val());
-                //var storage_node = $("#storage_node").val();
-                //var sto_ar = storage_node.split(":");
+                var storage_node = $("#storage_node").val();
+                var sto_ar = storage_node.split(":");
                 var end = curr + N;
                 var ToAdd = "";
                 //alert(curr);
                 //alert(end);
                 if (end > idx_array.length)  end = idx_array.length;
                 for (var i = curr; i <= end; ++i) {
-                    var src = "http://"+"192.168.1.100"+":"+"10005"+"?block_no="+idx_array[i][0]
+                    var src = "http://"+sto_ar[0]+":"+sto_ar[1]+"?block_no="+idx_array[i][0]
                         +"&offset="+idx_array[i][1]
                         +"&length="+idx_array[i][2];
                     ToAdd += "<img src='"+src+"'border=0 id='img"+count+"'onclick='loadOnViewer(this)'onmouseover='' style='height:100px; width:100px; cursor:pointer'>";
