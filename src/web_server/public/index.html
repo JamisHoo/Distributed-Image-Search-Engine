@@ -15,7 +15,9 @@
         <h3 class="ui teal inverted menu">
                 <form method="post" action="{{url_for('search') }}" id="search_form" >
                         <div class="ui large action input">
-                            <input type="text" placeholder="Search...COMPUTING_NODE_HOST,STORAGE_NODE_HOST" name="word" id="submit" style="height:50px; overflow-x:auto;">
+                            <input type="text" placeholder="Search...COMPUTING_NODE_HOST" name="word" id="submit" style="height:50px;overflow-x:auto;">
+                            <input type="hidden" id="computing_node" value="COMPUTING_NODE_HOST">
+                            <input type="hidden" id="storage_node" value="STORAGE_NODE_HOST">
                             <input type="hidden" name="user_id" value="{{user_id}}">
                             <a class="ui blue button" onclick="Search()">Search<i class="search icon"></i></a>
                         </div>
@@ -97,10 +99,31 @@
 
         <input type="hidden" id="loaded_counter" value="0">
         <script>
+            var xmlHttp = new XMLHttpRequest();
+            function Search() {
+                var computing_node = $("#computing_node").val();
+                var storage_node = $("#storage_node").val();
+                //alert(computing_node);
+                if (computing_node && storage_node) {
+                    /*$.get(
+                        "http://127.0.0.1:10000?keyword=1234",
+                        function(data) {
+                            alert(data);
+                        }
+                    )*/
+                    var word = $("#submit").val();
+                    xmlHttp.open("GET", "http://127.0.0.1:10000?keyword=1234", false);
+                    xmlHttp.send(null);
+                    var result = xmlHttp.responseText ;
+                    console.log(result);
+                    Submit(result);
+                }
+            }
             var idx_array;
-            function Submit() {
-                var idxstring = "{{imageidx}}" ;
-                var idx = idxstring.split('|');
+            function Submit(imageidx) {
+                var idxstring = String(imageidx) ;
+                alert(idxstring)
+                var idx = idxstring.split(';');
                 //alert(idx.length);
                 idx_array = new Array(idx.length);
                 for (var i = 0 ; i < idx.length; ++i) {
@@ -111,11 +134,11 @@
             }
             function load() {
                 var curr = parseInt($("#loaded_counter").val());
-                var end = curr + 400;
+                var end = curr + 1;
                 var ToAdd = "";
                 //alert(curr);
                 //alert(end);
-                if (end > idx_array.length)  end = idx_array_length;
+                if (end > idx_array.length)  end = idx_array.length;
                 for (var i = curr; i <= end; ++i) {
                     ToAdd += "<img src='http://192.168.1.100:10005/?block_no="+idx_array[i][0]
                     +"&offset="+idx_array[i][1]
@@ -124,18 +147,9 @@
                 //alert(ToAdd);
                 var now = $("#image_container").html(); 
                 $("#image_container").html(now + ToAdd); 
-                curr = end + 401;
+                curr = end + 1;
                 $("#loaded_counter").val(String(curr));
                 $("#loading").html("");
-            }
-            function Search() {
-                /*var objurl = $("#search_form").attr("action");
-                var term = $("#submit").val();
-                $.post(objurl, {
-                    word:term
-                }, function (data) {
-                    document.write(data);
-                });*/
             }
             function Print(){
                 var LINK=document.getElementById("link_text"); 
@@ -158,7 +172,6 @@
                     load();
                 }
             }
-            {% if imageidx %}  Submit(){% endif %}  
         </script>
     </body>
 </html>
