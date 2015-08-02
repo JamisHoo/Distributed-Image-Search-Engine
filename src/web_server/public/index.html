@@ -12,16 +12,13 @@
         <link rel="stylesheet" href="jquery.lazyload.js"> 
     </head>
     <body>
+        <input type="hidden" id="computing_node" value="COMPUTING_NODE_HOST">
+        <input type="hidden" id="storage_node" value="STORAGE_NODE_HOST">
         <h3 class="ui teal inverted menu">
-                <form method="post" action="{{url_for('search') }}" id="search_form" >
-                        <div class="ui large action input">
-                            <input type="text" placeholder="Search..." name="word" id="submit" style="height:50px;overflow-x:auto;">
-                            <input type="hidden" id="computing_node" value="COMPUTING_NODE_HOST">
-                            <input type="hidden" id="storage_node" value="STORAGE_NODE_HOST">
-                            <input type="hidden" name="user_id" value="{{user_id}}">
-                            <a class="ui blue button" onclick="Search()">Search<i class="search icon"></i></a>
-                        </div>
-                </form>
+            <div class="ui large action input">
+                <input type="text" placeholder="Search..." name="word" id="submit" style="height:50px;overflow-x:auto;" autofocus>
+                <a class="ui blue button" id="SearchButton" onclick="Search()">Search<i class="search icon"></i></a>
+            </div>
         </h3>
         <div class="ui horizontal icon divider">
         <i class="circular cloud icon"></i>
@@ -31,21 +28,9 @@
                 <p><FONT size=10 color="#FF7E7E"><i class="file outline icon"></i><STRONG>Choose</STRONG></FONT><FONT size=2><strong> an image</strong></FONT></p>
                 <div class="ui segment attached" style="height:600px; overflow-x:auto; display: inline-block; position:relative" id="view" onScroll="viewscroll()">
                     <div class="ui small images" id="image_container"> 
-                        <!--
-                        {% if imageidx %}
-                        {% for i in image_number %}
-                        <img class="lazy" id="h" src="http://192.168.1.100:10005/?block_no={{imageidx.block_no}}&offset={{imageidx.offset}}&length={{imageidx.length}}" height="100" width="100">
-                        {% endfor %}
-                        <script>
-                            var img = document.getElementById("h");
-                            var src = img.src;
-                            alert(src);
-                        </script>
-                        {% endif %}
-                        -->
+
                     </div>
                     <div id="loading" style="position:relative; "></div>
-
                 </div>
                 
             </div>
@@ -54,7 +39,7 @@
                 <div class="ui segment"  style="height:600px;">
                 <!--can delete this line-->
                 <!--can delete this line-->
-                <img  class="rounded ui image" src="1.jpg"style="height:580px; width:580px;">
+                <img  class="rounded ui image" src="" id="ViewerImage" style="height:580px; width:580px;">
                 </div>
             </div>
             <div class="five wide column">
@@ -70,10 +55,10 @@
                                     <FONT><STRONG>Image Download</STRONG></FONT>
                                 </div>
                                 <div class="field">
-                                    <img class="small ui image" src="1.jpg" style="vertical-align:middle">
+                                    <img class='small ui image'src='' id='DownloadImage' style="vertical-align:middle">
                                 </div>
                                 <div class="field">
-                                    <div class="small ui green button" onClick="Download()">Download</div>
+                                    <a href="" download="" id="downimage"><div class="small ui green button">Download</div></a>
                                 </div>
                             </div>
                         </div>
@@ -84,7 +69,7 @@
                                     <FONT><STRONG>Link</STRONG></FONT>
                                 </div>
                                 <div class="field">
-                                    <input type="text" name="link" id="link_text">
+                                    <input type="text" value="" name="link" id="link_text" >
                                 </div>
                                 <div class="field">
                                     <div class="small ui green button" onClick="Print()">Copy</div>
@@ -99,8 +84,19 @@
 
         <input type="hidden" id="loaded_counter" value="0">
         <script>
+            $(document).keypress(function(e){
+                if (e.which == 13){
+                    $('#SearchButton').click();   
+                }
+            });
+            var N = 50;
             var xmlHttp = new XMLHttpRequest();
+            var word;
+            var count;
+            var last_click_id;
             function Search() {
+                count = 0;
+                word = "";
                 var computing_node = $("#computing_node").val();
                 var com_ar = computing_node.split(":");
                 //var sto_ar = storage_node.split(":");
@@ -112,7 +108,7 @@
                             alert(data);
                         }
                     )*/
-                    var word = $("#submit").val();
+                    word = $("#submit").val();
                     xmlHttp.open("GET", "http://"+com_ar[0]+":"+com_ar[1]+"?keywords="+word, false);
                     xmlHttp.send(null);
                     var result = xmlHttp.responseText ;
@@ -123,7 +119,7 @@
             var idx_array;
             function Submit(imageidx) {
                 var idxstring = String(imageidx) ;
-                alert(idxstring)
+                //alert(idxstring)
                 var idx = idxstring.split(';');
                 //alert(idx.length);
                 idx_array = new Array(idx.length);
@@ -137,22 +133,35 @@
                 var curr = parseInt($("#loaded_counter").val());
                 //var storage_node = $("#storage_node").val();
                 //var sto_ar = storage_node.split(":");
-                var end = curr + 10;
+                var end = curr + N;
                 var ToAdd = "";
                 //alert(curr);
                 //alert(end);
                 if (end > idx_array.length)  end = idx_array.length;
                 for (var i = curr; i <= end; ++i) {
-                    ToAdd += "<img src='http://"+"192.168.1.100"+":"+"10005"+"?block_no="+idx_array[i][0]
-                    +"&offset="+idx_array[i][1]
-                    +"&length="+idx_array[i][2] + "'>";
+                    var src = "http://"+"192.168.1.100"+":"+"10005"+"?block_no="+idx_array[i][0]
+                        +"&offset="+idx_array[i][1]
+                        +"&length="+idx_array[i][2];
+                    ToAdd += "<img src='"+src+"'border=0 id='img"+count+"'onclick='loadOnViewer(this)'onmouseover='' style='height:100px; width:100px; cursor:pointer'>";
+                    count += 1;
                 }
                 //alert(ToAdd);
                 var now = $("#image_container").html(); 
                 $("#image_container").html(now + ToAdd); 
-                curr = end + 11;
+                curr = end + N + 1;
                 $("#loaded_counter").val(String(curr));
                 $("#loading").html("");
+            }
+            function loadOnViewer(img) {
+                var src = img.src;
+                $('#'+last_click_id).attr('border', 0);
+                last_click_id = img.id;
+                img.border = 5;
+                $('#ViewerImage').attr("src", src);
+                $('#DownloadImage').attr("src", src);
+                $('#downimage').attr("href", src);
+                $('#downimage').attr("download", word);
+                $('#link_text').val(src);
             }
             function Print(){
                 var LINK=document.getElementById("link_text"); 
