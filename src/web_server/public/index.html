@@ -102,7 +102,8 @@
             var xmlHttp = new XMLHttpRequest();
             function Search() {
                 var computing_node = $("#computing_node").val();
-                var storage_node = $("#storage_node").val();
+                var com_ar = computing_node.split(":");
+                var sto_ar = storage_node.split(":");
                 //alert(computing_node);
                 if (computing_node && storage_node) {
                     /*$.get(
@@ -112,7 +113,7 @@
                         }
                     )*/
                     var word = $("#submit").val();
-                    xmlHttp.open("GET", "http://127.0.0.1:10000?keyword=1234", false);
+                    xmlHttp.open("GET", "http://"+com_ar[0]+":"+com_ar[1]+"?keyword="+word, false);
                     xmlHttp.send(null);
                     var result = xmlHttp.responseText ;
                     console.log(result);
@@ -134,13 +135,15 @@
             }
             function load() {
                 var curr = parseInt($("#loaded_counter").val());
+                var storage_node = $("#storage_node").val();
+                var sto_ar = storage_node.split(":");
                 var end = curr + 1;
                 var ToAdd = "";
                 //alert(curr);
                 //alert(end);
                 if (end > idx_array.length)  end = idx_array.length;
                 for (var i = curr; i <= end; ++i) {
-                    ToAdd += "<img src='http://192.168.1.100:10005/?block_no="+idx_array[i][0]
+                    ToAdd += "<img src='http://"+sto_ar[0]+":"+sto_ar[1]+"?block_no="+idx_array[i][0]
                     +"&offset="+idx_array[i][1]
                     +"&length="+idx_array[i][2] + "'>";
                 }
