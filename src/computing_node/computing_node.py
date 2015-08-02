@@ -23,11 +23,11 @@ from new_process import *
 
 search_index_path = "index"
 
-local_addr = "0.0.0.0"
+local_addr = "192.168.1.102"
 tcp_port = 10000
 http_ports = [ 10001, 10002 , 10003, 10004 ]
 
-master_addr = "localhost"
+master_addr = "192.168.1.102"
 master_port = 3000
 
 
