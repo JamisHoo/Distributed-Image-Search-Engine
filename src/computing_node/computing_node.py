@@ -28,7 +28,7 @@ tcp_port = 10000
 http_ports = [ 10001, 10002 , 10003, 10004 ]
 
 master_addr = "localhost"
-master_port = 10005
+master_port = 3000
 
 
 
