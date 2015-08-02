@@ -45,9 +45,9 @@ def new_master_detect_process(master_addr, master_port, local_addr, http_ports, 
             break
 
         for http_port in http_ports:
-            url = "http://%s:%s/?addr=%s&port=%s&tcp_port=%s" % \
+            url = "http://%s:%s/new_computing_node/?addr=%s&http_port=%s&tcp_port=%s" % \
                 (master_addr, str(master_port), local_addr, str(http_port), str(tcp_port))
-            print("url ==", url)
+            #print("url ==", url)
             try:
                 urllib.request.urlopen(url)
             except Exception:
