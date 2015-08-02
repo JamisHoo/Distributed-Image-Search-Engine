@@ -2,6 +2,7 @@
 imagenet
 pre
 src/web_server/node_modules/
+src/computing_node/index
 
 # OS X
 *.DS_Store
@@ -13,3 +14,6 @@ src/web_server/node_modules/
 # Python
 *.pyc
 *.pyo
+
+# *nix tools
+*nohup.out
