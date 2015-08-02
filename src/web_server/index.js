@@ -96,11 +96,11 @@ app.get("/new_computing_node", function(req, res) {
 
 // accept new storage node
 app.get("/new_storage_node", function(req, res) {
-    function create_connection(addr, port) {
-        var host = addr + ":" + port;
+    function create_connection(addr, http_port, tcp_port) {
+        var host = addr + ":" + http_port;
         var sock = new net.Socket();
 
-        sock.connect(port, addr, function() {
+        sock.connect(tcp_port, addr, function() {
             storage_hosts[storage_node_count] = host;
             storage_hosts_hash[host] = storage_node_count;
             ++storage_node_count;
@@ -135,10 +135,10 @@ app.get("/new_storage_node", function(req, res) {
     }
 
 
-    if ("addr" in req.query && "port" in req.query) {
-        var host = req.query.addr + ":" + req.query.port;
+    if ("addr" in req.query && "http_port" in req.query && "tcp_port" in req.query) {
+        var host = req.query.addr + ":" + req.query.http_port;
         if (!(host in storage_hosts_hash)) {
-            create_connection(req.query.addr, req.query.port);
+            create_connection(req.query.addr, req.query.http_port, req.query.tcp_port);
             res.send("Try to connect to " + host + ". ");
         } else {
             res.send(host + " already in storage hosts list. ");
