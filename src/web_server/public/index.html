@@ -1,13 +1,15 @@
 <html>
     <head>
         <meta charset="uft-8">
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
         <link rel="stylesheet" href="semantic/packaged/javascript/semantic.min.js">
         <link rel="stylesheet" href="semantic/packaged/css/semantic.min.css">
+        <!--link rel="stylesheet" type="text/css" href="semantic/out/semantic.min.css">
+        <script src="semantic/out/semantic.min.js"></script-->
         <title>Image Search Engine</title>
         <meta name="description" content="">
         <meta name=viewport content="width=device-width, initial-scale=1">
         <meta name="mobile-web-app-capable" content="yes">
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
         <link rel="stylesheet" href="jquery-2.1.1.js"> 
         <link rel="stylesheet" href="jquery.lazyload.js"> 
     </head>
@@ -20,73 +22,53 @@
                 <a class="ui blue button" id="SearchButton" onclick="Search()">Search<i class="search icon"></i></a>
             </div>
         </h3>
-        <div class="ui horizontal icon divider">
-        <i class="circular cloud icon"></i>
+        <div class="ui horizontal icon divider"><i class="circular cloud icon"></i></div>
+        <div id="noresult" style="display:none">
+            <h1 class="ui inverted black block header">NO RESULT</h1>
         </div>
+        <div id="searchresult" style="display:none">
         <div class="ui three column grid">
             <div class="five wide column">
                 <p><FONT size=10 color="#FF7E7E"><i class="file outline icon"></i><STRONG>Choose</STRONG></FONT><FONT size=2><strong> an image</strong></FONT></p>
                 <div class="ui segment attached" style="height:600px; overflow-x:auto; display: inline-block; position:relative" id="view" onScroll="viewscroll()">
-                    <div class="ui small images" id="image_container"> 
+                    <div class="ui small images" id="image_container" > 
 
                     </div>
-                    <div id="loading" style="position:relative; "></div>
+                    <!--div id="loading" style="position:relative; "></div-->
                 </div>
                 
             </div>
             <div class="six wide column">
                 <p><FONT size=10 color="#FF7E7E"><i class="zoom in icon"></i><STRONG>View</STRONG></FONT><FONT size=2><STRONG> image</STRONG></FONT></p>
                 <div class="ui segment"  style="height:600px;">
-                <!--can delete this line-->
-                <!--can delete this line-->
                 <img  class="rounded ui image" src="" id="ViewerImage" style="height:580px; width:580px;">
                 </div>
             </div>
             <div class="five wide column">
                 <p><FONT size=10 color="#FF7E7E"><i class="cart icon"></i><STRONG>Use</STRONG></FONT><FONT size=2><STRONG>it the way you want</STRONG></FONT></p>
-
                 <div class="ui segment">
-                <!--can delete this line
-                <div class="ui active inverted dimmer"><div class="ui medium text loader"><STRONG>Loading</STRONG></div></div>
-                can delete this line-->
-                        <div class="ui red form segment">
-                            <div class="inline fields">
-                                <div class="field">
-                                    <FONT><STRONG>Image Download</STRONG></FONT>
-                                </div>
-                                <div class="field">
-                                    <img class='small ui image'src='' id='DownloadImage' style="vertical-align:middle">
-                                </div>
-                                <div class="field">
-                                    <a href="" download="" id="downimage"><div class="small ui green button">Download</div></a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="ui red form segment">
-                            <div class="inline fields">
-                                <div class="field">
-                                    <FONT><STRONG>Link</STRONG></FONT>
-                                </div>
-                                <div class="field">
-                                    <input type="text" value="" name="link" id="link_text" >
-                                </div>
-                                <div class="field">
-                                    <div class="small ui green button" onClick="Print()">Copy</div>
-                                </div>
-                            </div>
+                    <div class="ui red form segment">
+                        <div class="inline fields">
+                            <div class="field"><FONT><STRONG>Image Download</STRONG></FONT></div>
+                            <div class="field"><img class='small ui image' src='' id='DownloadImage' style="vertical-align:middle;height:80px;width:80px;"></div>
+                            <div class="field"><a href="" download="1234" id="downimage"><div class="small ui green button" id="downbt">Download</div></a></div>
                         </div>
                     </div>
-                        
+                    <div class="ui red form segment">
+                        <div class="inline fields">
+                            <div class="field"><FONT><STRONG>Link</STRONG></FONT></div>
+                            <div class="field"><input type="text" value="" name="link" id="link_text" ></div>
+                            <div class="field"><div class="small ui green button" id="copybt" onClick="Copy()">Copy</div></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
         <input type="hidden" id="loaded_counter" value="0">
         <script>
             $(document).keypress(function(e){
                 if (e.which == 13){
-                    $('#SearchButton').click();   
+                    $('#SearchButton').click();
                 }
             });
             var N = 50;
@@ -95,23 +77,34 @@
             var count;
             var last_click_id;
             function Search() {
+                $("#loaded_counter").val("0");
+                $("#image_container").html("");
+                $("#ViewerImage").attr("src","");
+                $("#DownloadImage").attr("src","");
+                $("#link_text").val("");
+                //var count = 0;
+                //var last_click_id;
                 count = 0;
                 word = "";
                 var computing_node = $("#computing_node").val();
+                alert(computing_node);
                 var com_ar = computing_node.split(":");
                 //var sto_ar = storage_node.split(":");
                 //alert(computing_node);
                 if (computing_node) {
-                    /*$.get(
-                        "http://127.0.0.1:10000?keyword=1234",
-                        function(data) {
-                            alert(data);
-                        }
-                    )*/
                     word = $("#submit").val();
                     xmlHttp.open("GET", "http://"+com_ar[0]+":"+com_ar[1]+"?keywords="+word, false);
                     xmlHttp.send(null);
                     var result = xmlHttp.responseText ;
+                    //alert(result);
+                    if (result == "") {
+                        alert("none!");
+                        $("#noresult").css("display", "block");
+                        $("#searchresult").css("display", "none");
+                        return;
+                    }
+                    $("#noresult").css("display", "none");
+                    $("#searchresult").css("display","block");
                     console.log(result);
                     Submit(result);
                 }
@@ -142,7 +135,7 @@
                     var src = "http://"+sto_ar[0]+":"+sto_ar[1]+"?block_no="+idx_array[i][0]
                         +"&offset="+idx_array[i][1]
                         +"&length="+idx_array[i][2];
-                    ToAdd += "<img src='"+src+"'border=0 id='img"+count+"'onclick='loadOnViewer(this)'onmouseover='' style='height:100px; width:100px; cursor:pointer'>";
+                        ToAdd += "<img onmouseenter='EnterEvent(this)' onmouseleave='LeaveEvent(this)' class='smallimg' src='"+src+"' id='img"+count+"'onclick='loadOnViewer(this)' style='height:115px; width:115px; cursor:pointer; border-style:solid;border-width:2px;border-color:black;'>";
                     count += 1;
                 }
                 //alert(ToAdd);
@@ -151,10 +144,23 @@
                 curr = end + N + 1;
                 $("#loaded_counter").val(String(curr));
                 $("#loading").html("");
+                $("#img0").click();  //focus on the first image
+            }
+            function EnterEvent(img) {
+                if ($(img).css('border-color')!='green') 
+                    $(img).css('border-color','red');
+            }
+            function LeaveEvent(img) {
+                if($(img).css('border-color')!='green') 
+                    $(img).css('border-color','black');
             }
             function loadOnViewer(img) {
                 var src = img.src;
                 $('#'+last_click_id).attr('border', 0);
+                $("#copybt").attr("class", "small ui green button");
+                $("#copybt").html("Copy");
+                $(img).css("border-color", "green");
+                $("#"+last_click_id).css("border-color", "");
                 last_click_id = img.id;
                 img.border = 5;
                 $('#ViewerImage').attr("src", src);
@@ -163,11 +169,12 @@
                 $('#downimage').attr("download", word);
                 $('#link_text').val(src);
             }
-            function Print(){
+            function Copy(){
                 var LINK=document.getElementById("link_text"); 
                 LINK.select(); 
                 document.execCommand("Copy");
-                alert("Copied!"); 
+                $("#copybt").attr("class", "small ui disabled button");
+                $("#copybt").html("Copied");
             }
             function viewscroll(){
                 var a=document.getElementById("view");
