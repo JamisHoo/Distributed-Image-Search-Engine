@@ -11,14 +11,30 @@
         <meta name=viewport content="width=device-width, initial-scale=1">
         <meta name="mobile-web-app-capable" content="yes">
         <link rel="stylesheet" href="jquery-2.1.1.js"> 
-        <link rel="stylesheet" href="jquery.lazyload.js"> 
+        <link rel="stylesheet" href="jquery.lazyload.js">   
+        <style>
+            #view {
+                height:59.1vh;
+            }
+            #Viewer {
+                height:59.1vh;
+            }
+            #ViewerImage{
+                height:59.1vh;
+                width:30.2vw;
+            }
+            .smallimg{
+                height:11.7vh;
+                /*width:11.7vh;*/
+            }
+        </style>
     </head>
     <body>
         <input type="hidden" id="computing_node" value="COMPUTING_NODE_HOST">
         <input type="hidden" id="storage_node" value="STORAGE_NODE_HOST">
         <h3 class="ui teal inverted menu">
             <div class="ui large action input">
-                <input type="text" placeholder="Search..." name="word" id="submit" style="height:50px;overflow-x:auto;" autofocus>
+                <input type="text" width=100px placeholder="Search..." name="word" id="submit" style="height:50px;overflow-x:auto;" autofocus>
                 <a class="ui blue button" id="SearchButton" onclick="Search()">Search<i class="search icon"></i></a>
             </div>
         </h3>
@@ -30,7 +46,7 @@
         <div class="ui three column grid">
             <div class="five wide column">
                 <p><FONT size=10 color="#FF7E7E"><i class="file outline icon"></i><STRONG>Choose</STRONG></FONT><FONT size=2><strong> an image</strong></FONT></p>
-                <div class="ui segment attached" style="height:600px; overflow-x:auto; display: inline-block; position:relative" id="view" onScroll="viewscroll()">
+                <div class="ui segment attached" style="overflow-x:auto; display: inline-block;position:relative;" id="view" onScroll="viewscroll()">
                     <div class="ui small images" id="image_container" > 
 
                     </div>
@@ -40,8 +56,8 @@
             </div>
             <div class="six wide column">
                 <p><FONT size=10 color="#FF7E7E"><i class="zoom in icon"></i><STRONG>View</STRONG></FONT><FONT size=2><STRONG> image</STRONG></FONT></p>
-                <div class="ui segment"  style="height:600px;">
-                <img  class="rounded ui image" src="" id="ViewerImage" style="height:580px; width:580px;">
+                <div class="ui segment"  style="" id="Viewer">
+                    <img  class="rounded ui image" src="" id="ViewerImage" style="">
                 </div>
             </div>
             <div class="five wide column">
@@ -51,7 +67,7 @@
                         <div class="inline fields">
                             <div class="field"><FONT><STRONG>Image Download</STRONG></FONT></div>
                             <div class="field"><img class='small ui image' src='' id='DownloadImage' style="vertical-align:middle;height:80px;width:80px;"></div>
-                            <div class="field"><a href="" download="1234" id="downimage"><div class="small ui green button" id="downbt">Download</div></a></div>
+                            <div class="field"><a href="" download="" id="downimage"><div class="small ui green button" id="downbt">Download</div></a></div>
                         </div>
                     </div>
                     <div class="ui red form segment">
@@ -66,6 +82,15 @@
         </div>
         <input type="hidden" id="loaded_counter" value="0">
         <script>
+            $(document).ready(function(){
+                var w = window,
+                d = document,
+                e = d.documentElement,
+                g = d.getElementsByTagName('body')[0],
+                x = w.innerWidth || e.clientWidth || g.clientWidth,
+                y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+                alert(x + ' × ' + y);
+            })
             $(document).keypress(function(e){
                 if (e.which == 13){
                     $('#SearchButton').click();
@@ -77,6 +102,7 @@
             var count;
             var last_click_id;
             function Search() {
+                alert( $('#view').css('height') ) ;
                 $("#loaded_counter").val("0");
                 $("#image_container").html("");
                 $("#ViewerImage").attr("src","");
@@ -87,7 +113,7 @@
                 count = 0;
                 word = "";
                 var computing_node = $("#computing_node").val();
-                alert(computing_node);
+                //alert(computing_node);
                 var com_ar = computing_node.split(":");
                 //var sto_ar = storage_node.split(":");
                 //alert(computing_node);
@@ -135,7 +161,7 @@
                     var src = "http://"+sto_ar[0]+":"+sto_ar[1]+"?block_no="+idx_array[i][0]
                         +"&offset="+idx_array[i][1]
                         +"&length="+idx_array[i][2];
-                        ToAdd += "<img onmouseenter='EnterEvent(this)' onmouseleave='LeaveEvent(this)' class='smallimg' src='"+src+"' id='img"+count+"'onclick='loadOnViewer(this)' style='height:115px; width:115px; cursor:pointer; border-style:solid;border-width:2px;border-color:black;'>";
+                        ToAdd += "<img onmouseenter='EnterEvent(this)' onmouseleave='LeaveEvent(this)' class='smallimg' src='"+src+"' id='img"+count+"'onclick='loadOnViewer(this)' style='cursor:pointer; border-style:solid; border-width:2px; border-color:black;'>";
                     count += 1;
                 }
                 //alert(ToAdd);
@@ -145,6 +171,10 @@
                 $("#loaded_counter").val(String(curr));
                 $("#loading").html("");
                 $("#img0").click();  //focus on the first image
+                $(".classimg").css("width", '11.7vh');
+                //var y = $(".smallimg").css('height');
+                //var x = $(".smallimg").css('width');
+                alert(y + "," + x);
             }
             function EnterEvent(img) {
                 if ($(img).css('border-color')!='green') 
