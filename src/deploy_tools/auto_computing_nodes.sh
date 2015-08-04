@@ -72,7 +72,7 @@ chmod 600 /root/.ssh/authorized_keys
 
 
 # install python3 and node.js
-yum -y install readline-devel sqlite-devel zlib-devel openssl-devel nodejs > /dev/null
+yum -y install readline-devel sqlite-devel zlib-devel openssl-devel nodejs tmux > /dev/null
 wget http://test-10001818.file.myqcloud.com/Python-3.4.3.tar.xz
 tar xvf Python-3.4.3.tar.xz > /dev/null
 cd Python-3.4.3
