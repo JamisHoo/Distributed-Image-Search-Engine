@@ -31,12 +31,12 @@ MASTER_PORT=$4
 
 # install computing node
 rm -rf Distributed-Image-Search-Engine-ds/
-wget http://test-10001818.file.myqcloud.com/Distributed-Image-Search-Engine-ds.zip
+wget http://imagenet.oss-cn-beijing.aliyuncs.com/Distributed-Image-Search-Engine-ds.zip
 unzip Distributed-Image-Search-Engine-ds.zip > /dev/null
 rm Distributed-Image-Search-Engine-ds.zip
 
 cd Distributed-Image-Search-Engine-ds/src/computing_node/
-wget http://test-10001818.file.myqcloud.com/index
+wget http://imagenet.oss-cn-beijing.aliyuncs.com/index
 
 # substitude computing node running parameters
 line_no=$(grep -n "local_addr = " computing_node.py | cut -f1 -d:)
