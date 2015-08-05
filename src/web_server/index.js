@@ -3,6 +3,7 @@
 var express = require("express");
 var fs = require("fs");
 var net = require("net");
+var _ = require("underscore");
 
 
 var app = express();
@@ -31,11 +32,12 @@ app.get("/", function(req, res) {
 // index.html 
 app.get("/index.html", function(req, res) {
     console.log("get /index.html");
-    var rand1 = Math.floor(Math.random() * computing_node_count);
-    var rand2 = Math.floor(Math.random() * storage_node_count);
+    var rand1 = computing_hosts[Math.floor(Math.random() * computing_node_count)];
+    var rands = _.sample(storage_hosts, 20).join();
+
     var content = 
-        search_html.replace("COMPUTING_NODE_HOST", computing_hosts[rand1])
-                   .replace("STORAGE_NODE_HOST", storage_hosts[rand2]);         
+        search_html.replace("COMPUTING_NODE_HOST", rand1)
+                   .replace("STORAGE_NODE_HOST", rands);
     
     res.send(content);
 });
