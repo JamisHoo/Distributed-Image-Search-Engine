@@ -27,11 +27,14 @@ master_port = 3000
 for host in hosts:
     with pysftp.Connection(host[0], username=host[1], password=host[2]) as sftp:
         # config basic environment
+        '''
         sftp.put("auto_config.sh")
         sftp.execute("sh auto_config.sh 2>&1 | tee auto_deploy_log")
+        '''
         # update computing node environment
         sftp.execute("rm -f auto_computing_node.sh")
         sftp.put("auto_computing_node.sh")
         sftp.execute("sh auto_computing_node.sh %s %s %s %s 2>&1 | tee auto_deploy_log" % (host[0], host[3], master_addr, master_port))
+        sftp.execute("tmux kill-session -t computing_nodes")
         sftp.execute("cd Distributed-Image-Search-Engine-ds/src/computing_node; tmux new -d -s computing_nodes")
         sftp.execute("tmux send -t computing_nodes.0 ./computing_node.py ENTER")
