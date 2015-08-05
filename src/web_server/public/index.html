@@ -76,7 +76,8 @@
                         <div class="inline fields" style="display:inline-block;">
                             <div class="ui black header" id="literal2">Link</div>
                             <input type="text" value="" name="link" id="link_text" >
-                            <div class="small ui green button" id="copybt"style="margin-top:10px;" onClick="Copy()">Copy</div>
+                            <div class="small ui green button" id="copybt"style="float:left;display:inline; margin-top:10px;" onClick="Copy()">Copy</div>
+                            <div class="ui red header"style="display:none;float:left;vertical-align:middle;margin-left:20px; margin-top:10px;" id="copied">Copied</div>
                         </div>
                     </div>
                 </div>
@@ -210,11 +211,16 @@
                 var LINK=document.getElementById("link_text"); 
                 LINK.select(); 
                 document.execCommand("Copy");
-                $("#copybt").attr("class", "small ui red button");
+                /*$("#copybt").attr("class", "small ui red button");
                 $("#copybt").html("Copied");
                 setTimeout(function(){
                     $("#copybt").attr("class", "small ui green button");
                     $("#copybt").html("Copy");
+                    $("#link_text").blur();
+                }, 2000);*/
+                $("#copied").css("display", "inline");
+                setTimeout(function(){
+                    $("#copied").css("display", "none");
                     $("#link_text").blur();
                 }, 2000);
             }
@@ -234,6 +240,9 @@
                 }
             }
             function Resize() {
+                //link_text
+                var Linkwid = (parseInt($('#redform2').css('width')) * 0.8).toString() + "px";
+                $("#link_text").css('width', Linkwid);
                 //Choose an image
                 var wid = $("#image_container").css('width');
                 var hei;
