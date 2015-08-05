@@ -5,7 +5,7 @@
  #  (See accompanying file LICENSE or copy at http://opensource.org/licenses/MIT)
  #  
  #  Project: 
- #  Filename: auto_computing_nodes.sh 
+ #  Filename: auto_config.sh
  #  Version: 1.0
  #  Author: Jamis Hoo
  #  E-mail: hoojamis@gmail.com
@@ -18,16 +18,6 @@ if [ "$EUID" -ne 0 ]; then
     echo Not root.
     exit 1
 fi
-
-if (($# != 4)); then
-    exit 1
-fi
-
-
-NODE_ADDR=$1
-NODE_NUM_PORTS=$2
-MASTER_ADDR=$3
-MASTER_PORT=$4
 
 # ssh key
 rm -rf /root/.ssh
@@ -84,38 +74,10 @@ cd ..
 rm -rf Python-3.4.3
 rm -f Python-3.4.3.tar.xz
 
-wget https://bootstrap.pypa.io/get-pip.py
+wget http://test-10001818.file.myqcloud.com/get-pip.py
 python get-pip.py
 rm -f get-pip.py 
 
-# install computing node
-wget http://test-10001818.file.myqcloud.com/Distributed-Image-Search-Engine-ds.zip
-unzip Distributed-Image-Search-Engine-ds.zip > /dev/null
-rm Distributed-Image-Search-Engine-ds.zip
-
-cd Distributed-Image-Search-Engine-ds/src/computing_node/
-wget http://test-10001818.file.myqcloud.com/index
-
-# substitude computing node running parameters
-line_no=$(grep -n "local_addr = " computing_node.py | cut -f1 -d:)
-sed -i "${line_no}s/.*/local_addr\ =\ \\\"${NODE_ADDR}\\\"/" computing_node.py
-
-line_no=$(grep -n "master_addr = " computing_node.py | cut -f1 -d:)
-sed -i "${line_no}s/.*/master_addr\ =\ \\\"${MASTER_ADDR}\\\"/" computing_node.py
-
-line_no=$(grep -n "master_port = " computing_node.py | cut -f1 -d:)
-sed -i "${line_no}s/.*/master_port\ =\ ${MASTER_PORT}/" computing_node.py
-
-START_PORT=10001
-PORTS=""
-for ((i = 0; i < $NODE_NUM_PORTS; ++i)); do
-    PORTS="$PORTS$((START_PORT + i)), "
-done
-PORTS="[ $PORTS ]"
-
-echo $PORTS
-
-line_no=$(grep -n "http_ports = " computing_node.py | cut -f1 -d:)
-sed -i "${line_no}s/.*/http_ports\ =\ ${PORTS}/" computing_node.py
+rm $0
 
 
