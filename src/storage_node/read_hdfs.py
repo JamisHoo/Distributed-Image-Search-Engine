@@ -5,38 +5,35 @@
  #  (See accompanying file LICENSE or copy at http://opensource.org/licenses/MIT)
  #  
  #  Project: 
- #  Filename: image_extract.py 
+ #  Filename: read_hdfs.py 
  #  Version: 1.0
  #  Author: Jamis Hoo
  #  E-mail: hjm211324@gmail.com
- #  Date: Jul 27, 2015
- #  Time: 22:26:51
- #  Description: accecpt HTTP Get request 
- #               extract image from HDFS
- #               send response to client
+ #  Date: Aug  2, 2015
+ #  Time: 20:39:31
+ #  Description: 
 ###############################################################################
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import re
 import pyhdfs
 import time
 
-hostName = "0.0.0.0"
-hostPort = 10005
-
-hdfs_image_path = "/imagenet/"
-hdfs_host = "localhost:50070"
-
-path_pattern = re.compile("^/[^?]*\?block_no=([0-9a-f]*)&offset=([0-9a-f]*)&length=([0-9a-f]+)$", flags = re.IGNORECASE);
-
-hdfs_client = pyhdfs.HdfsClient(hosts = hdfs_host)
-
-
 class ImageServer(BaseHTTPRequestHandler):
+    path_pattern = re.compile("^/[^?]*\?block_no=([0-9a-f]*)&offset=([0-9a-f]*)&length=([0-9a-f]+)$", flags = re.IGNORECASE);
+    hdfs_client = None
+    hdfs_image_path = None
 
+    @staticmethod
+    def init(hdfs_host, hdfs_image_path):
+        ImageServer.hdfs_client = pyhdfs.HdfsClient(hosts = hdfs_host)
+        ImageServer.hdfs_image_path = hdfs_image_path
+    
     def do_GET(self):
-        global path_pattern
+        if not (ImageServer.hdfs_image_path and ImageServer.hdfs_client):
+            self.send_reject()
+            return
 
-        match_obj = path_pattern.match(self.path)
+        match_obj = ImageServer.path_pattern.match(self.path)
         if not match_obj or len(match_obj.groups()) != 3:
             self.send_reject()
         else:
@@ -65,26 +62,10 @@ class ImageServer(BaseHTTPRequestHandler):
         self.wfile.write(image)
 
     def extract_image(self, signature):
-        global hdfs_client
-
         block_no = int(signature[0], 16)
         offset = int(signature[1], 16)
         length = int(signature[2], 16)
 
-        image = hdfs_client.open(hdfs_image_path + format(block_no, "08x"), offset = offset, length = length).read()
+        image = ImageServer.hdfs_client.open(ImageServer.hdfs_image_path + format(block_no, "08x"), offset = offset, length = length).read()
 
         return image
-
-
-
-myServer = HTTPServer((hostName, hostPort), ImageServer)
-print(time.asctime(), "Server Starts - %s:%s" % (hostName, hostPort))
-
-try:
-    myServer.serve_forever()
-except KeyboardInterrupt:
-    pass
-
-myServer.server_close()
-print(time.asctime(), "Server Stops - %s:%s" % (hostName, hostPort))
-

@@ -58,8 +58,8 @@ class SearchEngine(BaseHTTPRequestHandler):
             "Format of request URL: /?keywords=[keyword]+[keyword]+...+[keyword]",
             ""
             "e.g."
-            "http://192.168.1.100:10005/keywords=dog+cat",
-            "http://59.66.130.35:10005/keywrds=food"
+            "http://192.168.1.100:10005/?keywords=dog+cat",
+            "http://59.66.130.35:10005/?keywrds=food"
         ]
         self.wfile.write("\n".join(messages).encode("utf-8"))
     
