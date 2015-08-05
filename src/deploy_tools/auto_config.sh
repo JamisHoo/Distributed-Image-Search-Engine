@@ -57,6 +57,7 @@ echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCj/55YC9PSsKaIQ6xY/oSMEj38N2xayvUj+E
 
 cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 
+chmod 600 /root/.ssh/id_rsa
 chmod 600 /root/.ssh/authorized_keys
 
 
