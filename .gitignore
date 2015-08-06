@@ -4,6 +4,7 @@ pre
 src/web_server/node_modules/
 src/computing_node/index
 src/computing_node/index.mini
+src/computing_node/index.large
 
 # OS X
 *.DS_Store
