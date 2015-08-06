@@ -35,7 +35,7 @@
             <div class="four wide column" id="Choose_an_image">
                 <div class="ui red header" style="display:inline"><i class="file outline icon"></i><STRONG>Choose</STRONG><div class="sub header">an image</div></div>
                 <div class="ui segment" style="overflow:scroll; display: inline-block;position:relative;" id="view" onScroll="viewscroll()">
-                    <div class="ui small images" id="image_container" style="margin-left:auto;margin-right:auto;"> 
+                    <div class="ui small images" id="image_container" style="overflow-x:auto;  margin-left:auto;margin-right:auto;"> 
 
                     </div>
                 </div>
@@ -79,7 +79,6 @@
                 g = d.getElementsByTagName('body')[0],
                 x = w.innerWidth || e.clientWidth || g.clientWidth,
                 y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-                //alert(x + ' × ' + y);
                 //input text width
                 $("#submittext").css("width", (parseInt(x)*0.4).toString() + "px");
             });
@@ -94,35 +93,28 @@
             var count;
             var last_click_id;
             function Search() {
-                //alert( $('#view').css('height') ) ;
                 $("#loaded_counter").val("0");
                 $("#image_container").html("");
                 $("#ViewerImage").attr("src","");
                 $("#DownloadImage").attr("src","");
                 $("#link_text").val("");
-                //var count = 0;
-                //var last_click_id;
                 count = 0;
                 word = "";
                 var computing_node = $("#computing_node").val();
-                //alert(computing_node);
                 var com_ar = computing_node.split(":");
                 //var sto_ar = storage_node.split(":");
-                //alert(computing_node);
                 if (computing_node) {
                     word = $("#submittext").val();
                     xmlHttp.open("GET", "http://"+com_ar[0]+":"+com_ar[1]+"?keywords="+word, false);
                     xmlHttp.send(null);
                     var result = xmlHttp.responseText ;
                     if (result == "") {
-                        //alert("none!");
                         $("#noresult").css("display", "block");
                         $("#searchresult").css("display", "none");
                         return;
                     }
                     $("#noresult").css("display", "none");
                     $("#searchresult").css("display","block");
-                    console.log(result);
                     Submit(result);
                 }
             }
@@ -130,12 +122,9 @@
             var sto_ar, storage_node_num;
             function Submit(imageidx) {
                 var idxstring = String(imageidx);
-                //alert(idxstring)
                 var idx = idxstring.split(';');
-                //alert(idx.length);
                 idx_array = new Array(idx.length);
                 for (var i = 0 ; i < idx.length; ++i) {
-                    //idx_array[i] = new Array(3);
                     idx_array[i] = idx[i].split(',');
                 }
                 var storage_node_str  = $("#storage_node").val();
@@ -151,19 +140,14 @@
                 var curr = parseInt($("#loaded_counter").val());
                 var end = curr + N;
                 var ToAdd = "";
-                //alert(curr);
-                //alert(end);
                 if (end > idx_array.length)  end = idx_array.length-1;
-                console.log(curr + "," + end);
                 for (var i = curr; i <= end; ++i) {
                     var src = "http://"+sto_ar[i%storage_node_num][0]+":"+sto_ar[i%storage_node_num][1]+"?block_no="+idx_array[i][0]
                         +"&offset="+idx_array[i][1]
                         +"&length="+idx_array[i][2];
-                    console.log(src);
                     ToAdd += "<img onmouseenter='EnterEvent(this)' onmouseleave='LeaveEvent(this)' class='smallimg' src='"+src+"' id='img"+count+"'onclick='loadOnViewer(this)' style='cursor:pointer; border-style:solid; border-width:2px; border-color:black;'>";
                     count += 1;
                 }
-                //alert(ToAdd);
                 var now = $("#image_container").html(); 
                 $("#image_container").html(now + ToAdd); 
                 curr = end + N + 1;
@@ -208,14 +192,10 @@
             function viewscroll(){
                 var a=document.getElementById("view");
                 var f=a.clientHeight;
-                console.log("clientHeight:"+f);
                 var g=a.scrollTop;
-                console.log("scrollTop:"+g);
                 var h = a.scrollHeight;
-                console.log("scrollHeight:"+h);
                 if(f+g==h) {
                     $("#loading").html("<div class='ui active inverted dimmer' ><div class='ui medium text loader'><STRONG>Loading</STRONG></div></div>");
-                    //alert("The end!");
                     load();
                 }
             }
@@ -244,12 +224,10 @@
                 var addh = $("#Viewer").css("height");
                 var ww = $("#ViewerImage").css("width");
                 var hh = $("#ViewerImage").css("height");
-                console.log(ww + "," + hh);
                 var addwint = parseFloat(addw);
                 var addhint = parseFloat(addh);
                 var wwint   = parseFloat(ww);
                 var hhint   = parseFloat(hh);
-                console.log(wwint + "," + hhint);
                 if (wwint > hhint) {
                     var ratio = addwint / wwint;
                     $("#ViewerImage").css("width", addw);
