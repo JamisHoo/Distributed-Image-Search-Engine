@@ -130,7 +130,7 @@
                     var result = xmlHttp.responseText ;
                     //alert(result);
                     if (result == "") {
-                        alert("none!");
+                        //alert("none!");
                         $("#noresult").css("display", "block");
                         $("#searchresult").css("display", "none");
                         return;
@@ -142,6 +142,7 @@
                 }
             }
             var idx_array;
+            var sto_ar, storage_node_num;
             function Submit(imageidx) {
                 var idxstring = String(imageidx) ;
                 //alert(idxstring)
@@ -152,19 +153,24 @@
                     //idx_array[i] = new Array(3);
                     idx_array[i] = idx[i].split(',');
                 }
+                var storage_node_str  = $("#storage_node").val();
+                var storage_node_list = storage_node_str.split(",");
+                storage_node_num  = storage_node_list.length;
+                sto_ar = new Array(storage_node_num);
+                for (var i = 0 ; i < storage_node_num ; ++i){
+                    sto_ar[i] = storage_node_list[i].split(":");
+                }
                 load();
             }
             function load() {
                 var curr = parseInt($("#loaded_counter").val());
-                var storage_node = $("#storage_node").val();
-                var sto_ar = storage_node.split(":");
                 var end = curr + N;
                 var ToAdd = "";
                 //alert(curr);
                 //alert(end);
                 if (end > idx_array.length)  end = idx_array.length;
                 for (var i = curr; i <= end; ++i) {
-                    var src = "http://"+sto_ar[0]+":"+sto_ar[1]+"?block_no="+idx_array[i][0]
+                    var src = "http://"+sto_ar[i%storage_node_num][0]+":"+sto_ar[i%storage_node_num][1]+"?block_no="+idx_array[i][0]
                         +"&offset="+idx_array[i][1]
                         +"&length="+idx_array[i][2];
                         ToAdd += "<img onmouseenter='EnterEvent(this)' onmouseleave='LeaveEvent(this)' class='smallimg' src='"+src+"' id='img"+count+"'onclick='loadOnViewer(this)' style='cursor:pointer; border-style:solid; border-width:2px; border-color:black;'>";
