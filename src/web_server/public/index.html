@@ -46,7 +46,7 @@
         </div>
         <div id="searchresult" style="display:none">
         <div class="ui three column grid">
-            <div class="five wide column">
+            <div class="five wide column" id="Choose_an_image">
                 <div class="ui red header" style="display:inline"><i class="file outline icon"></i><STRONG>Choose</STRONG><div class="sub header">an image</div></div>
                 <div class="ui segment" style="overflow:scroll; display: inline-block;position:relative;" id="view" onScroll="viewscroll()">
                     <div class="ui small images" id="image_container" > 
@@ -58,8 +58,8 @@
             </div>
             <div class="six wide column">
                 <div class="ui red header" style="display:inline"><i class="zoom in icon"></i><STRONG>View</STRONG><div class="sub header"> image</div></div>
-                <div class="ui segment"  style="" id="Viewer">
-                    <img  class="rounded ui image" src="" id="ViewerImage" style="">
+                <div class="ui segment"  style="position:relative;" id="Viewer">
+                    <img  class="rounded ui image" src="" id="ViewerImage" style="position:absolute;margin:auto;top:0;left:0;right:0;bottom:0;">
                 </div>
             </div>
             <div class="five wide column">
@@ -96,7 +96,7 @@
                 //alert(x + ' × ' + y);
                 //input text width
                 $("#submittext").css("width", (parseInt(x)*0.4).toString() + "px");
-            })
+            });
             $(document).keypress(function(e){
                 if (e.which == 13){
                     $('#SearchButton').click();
@@ -128,7 +128,7 @@
                     xmlHttp.open("GET", "http://"+com_ar[0]+":"+com_ar[1]+"?keywords="+word, false);
                     xmlHttp.send(null);
                     var result = xmlHttp.responseText ;
-                    //alert(result);
+                    alert(result);
                     if (result == "") {
                         //alert("none!");
                         $("#noresult").css("display", "block");
@@ -144,7 +144,7 @@
             var idx_array;
             var sto_ar, storage_node_num;
             function Submit(imageidx) {
-                var idxstring = String(imageidx) ;
+                var idxstring = String(imageidx);
                 //alert(idxstring)
                 var idx = idxstring.split(';');
                 //alert(idx.length);
@@ -169,10 +169,12 @@
                 //alert(curr);
                 //alert(end);
                 if (end > idx_array.length)  end = idx_array.length-1;
+                console.log(curr + "," + end);
                 for (var i = curr; i <= end; ++i) {
                     var src = "http://"+sto_ar[i%storage_node_num][0]+":"+sto_ar[i%storage_node_num][1]+"?block_no="+idx_array[i][0]
                         +"&offset="+idx_array[i][1]
                         +"&length="+idx_array[i][2];
+                    console.log(src);
                     ToAdd += "<img onmouseenter='EnterEvent(this)' onmouseleave='LeaveEvent(this)' class='smallimg' src='"+src+"' id='img"+count+"'onclick='loadOnViewer(this)' style='cursor:pointer; border-style:solid; border-width:2px; border-color:black;'>";
                     count += 1;
                 }
@@ -246,6 +248,9 @@
                 }
             }
             function Resize() {
+                //Choose an image frame
+                var five_column_width = $("#Choose_an_image").css("width");
+                $("#image_container").css("width", (parseInt(five_column_width)*0.8).toString()+"px");
                 //link_text
                 var Linkwid = (parseInt($('#redform2').css('width')) * 0.8).toString() + "px";
                 $("#link_text").css('width', Linkwid);
@@ -253,13 +258,26 @@
                 var wid = $("#image_container").css('width');
                 var hei;
                 $("#view").css('height', (parseInt(wid)).toString()+"px");
-                var smallwid = Math.floor(parseInt(wid) / 5);
-                $('.smallimg').css('width', smallwid.toString()+"px");
-                $('.smallimg').css('height', smallwid.toString()+"px");
+                $("#ViewerImage").css('vertical-align', 'middle');
+                //var smallwid = Math.floor(parseInt(wid) / 5);
+                //$('.smallimg').css('width', smallwid.toString()+"px");
+                //$('.smallimg').css('height', smallwid.toString()+"px");
                 //View image
                 wid  = $("#Viewer").css('width');
-                $("#ViewerImage").css('width', (parseInt(wid)*0.8).toString()+"px");
-                $("#ViewerImage").css('height', (parseInt(wid)*0.8).toString()+"px");
+                //adjust viewer image
+                var img = $("#img"+last_click_id);
+                var width = img.width, height = img.height;
+                width = width / 10;
+                height = height / 10;
+                var max;
+                if (width > height) {
+                    $(img).css("width", wid*0.9);
+                }
+                else {
+                    $(img).css("height", height*0.9);
+                }
+                //$("#ViewerImage").css('width', (parseInt(wid)*0.8).toString()+"px");
+                //$("#ViewerImage").css('height', (parseInt(wid)*0.8).toString()+"px");
                 //var height = $("#Viewer").css('height');
                 //var length = Math.min(parseInt(width), parseInt(height));
                 //$("#Viewer").css('width' , length.toString()+"px");
