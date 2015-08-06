@@ -21,15 +21,21 @@ from new_process import *
 
 hdfs_host = "localhost:50070"
 hdfs_image_path = "/imagenet/"
-local_addr = "192.168.1.100"
+local_fs_paths = [ "/mnt", "/mnt2" ]
+local_addr = "59.66.130.16"
 tcp_port = 10010
-http_ports = [ 10011, 10012, 10013, 10014 ]
+http_ports = [ 10011, 10012, 10013, 10014, 10015, 10016, 10017, 10018, 10019, 10020,
+               #10021, 10022, 10023, 10024, 10025, 10026, 10027, 10028, 10029, 10030,
+               #10031, 10032, 10033, 10034, 10035, 10036, 10037, 10038, 10039, 10040,
+               #10041, 10042, 10043, 10044, 10045, 10046, 10047, 10048, 10049, 10050,
+             ]
 
-master_addr = "192.168.1.102"
+master_addr = "192.168.1.103"
 master_port = 3000
 
 if __name__ == "__main__":
-    ImageServer.init(hdfs_host, hdfs_image_path) 
+    #ImageServer.init(hdfs_host, hdfs_image_path, None) 
+    ImageServer.init(None, None, local_fs_paths) 
 
     # processes set
     processes = []

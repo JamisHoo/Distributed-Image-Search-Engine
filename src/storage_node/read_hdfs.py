@@ -15,6 +15,7 @@
 ###############################################################################
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import re
+import os
 import pyhdfs
 import time
 
@@ -22,14 +23,22 @@ class ImageServer(BaseHTTPRequestHandler):
     path_pattern = re.compile("^/[^?]*\?block_no=([0-9a-f]*)&offset=([0-9a-f]*)&length=([0-9a-f]+)$", flags = re.IGNORECASE);
     hdfs_client = None
     hdfs_image_path = None
+    local_fs_paths = None
+    
+    def __init__(self, *args):
+        self.local_fs_client = dict()
+        BaseHTTPRequestHandler.__init__(self, *args)
 
     @staticmethod
-    def init(hdfs_host, hdfs_image_path):
-        ImageServer.hdfs_client = pyhdfs.HdfsClient(hosts = hdfs_host)
-        ImageServer.hdfs_image_path = hdfs_image_path
+    def init(hdfs_host, hdfs_image_path, local_paths):
+        if hdfs_host and hdsf_image_path:
+            ImageServer.hdfs_client = pyhdfs.HdfsClient(hosts = hdfs_host)
+            ImageServer.hdfs_image_path = hdfs_image_path
+        elif local_paths:
+            ImageServer.local_fs_paths = local_paths
     
     def do_GET(self):
-        if not (ImageServer.hdfs_image_path and ImageServer.hdfs_client):
+        if not (ImageServer.hdfs_image_path and ImageServer.hdfs_client or ImageServer.local_fs_paths):
             self.send_reject()
             return
 
@@ -48,8 +57,8 @@ class ImageServer(BaseHTTPRequestHandler):
             "[hex] is a number in hexadecimal without leading 0x, case insensitive. ",
             "",
             "e.g.",
-            "http://192.168.1.100:10005/?block_no=4&offset=214428b48&length=d282",
-            "http://59.66.130.35:10005/?block_no=1&offset=20adb4722&length=3239c"
+            "http://59.66.130.16:10011/?block_no=d&offset=4e8d97f65&length=1ea02",
+            "http://59.66.130.16:10011/?block_no=e&offset=7ce740544&length=31517",
         ]
         self.wfile.write("\n".join(messages).encode("utf-8"))
 
@@ -62,10 +71,25 @@ class ImageServer(BaseHTTPRequestHandler):
         self.wfile.write(image)
 
     def extract_image(self, signature):
-        block_no = int(signature[0], 16)
+        block_no = format(int(signature[0], 16), "08x")
         offset = int(signature[1], 16)
         length = int(signature[2], 16)
 
-        image = ImageServer.hdfs_client.open(ImageServer.hdfs_image_path + format(block_no, "08x"), offset = offset, length = length).read()
+        if ImageServer.hdfs_client:
+            image = ImageServer.hdfs_client.open(ImageServer.hdfs_image_path + format(block_no, "08x"), offset = offset, length = length).read()
+        elif ImageServer.local_fs_paths:
+            if block_no not in self.local_fs_client:
+                for path in ImageServer.local_fs_paths:
+                    if os.path.exists(os.path.join(path, block_no)):
+                        self.local_fs_client[block_no] = open(os.path.join(path, block_no), "rb")
+                        break
+                else:
+                    return "File not found. ".encode("ascii")
+
+            image_file_handle = self.local_fs_client[block_no];
+            image_file_handle.seek(offset)
+            image = image_file_handle.read(length)
+        else:
+            image = "No hdfs or local fs clients. ".encode("ascii")
 
         return image
