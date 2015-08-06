@@ -31,7 +31,7 @@ class ImageServer(BaseHTTPRequestHandler):
 
     @staticmethod
     def init(hdfs_host, hdfs_image_path, local_paths):
-        if hdfs_host and hdsf_image_path:
+        if hdfs_host and hdfs_image_path:
             ImageServer.hdfs_client = pyhdfs.HdfsClient(hosts = hdfs_host)
             ImageServer.hdfs_image_path = hdfs_image_path
         elif local_paths:
@@ -76,7 +76,7 @@ class ImageServer(BaseHTTPRequestHandler):
         length = int(signature[2], 16)
 
         if ImageServer.hdfs_client:
-            image = ImageServer.hdfs_client.open(ImageServer.hdfs_image_path + format(block_no, "08x"), offset = offset, length = length).read()
+            image = ImageServer.hdfs_client.open(ImageServer.hdfs_image_path + block_no, offset = offset, length = length).read()
         elif ImageServer.local_fs_paths:
             if block_no not in self.local_fs_client:
                 for path in ImageServer.local_fs_paths:
