@@ -168,12 +168,12 @@
                 var ToAdd = "";
                 //alert(curr);
                 //alert(end);
-                if (end > idx_array.length)  end = idx_array.length;
+                if (end > idx_array.length)  end = idx_array.length-1;
                 for (var i = curr; i <= end; ++i) {
                     var src = "http://"+sto_ar[i%storage_node_num][0]+":"+sto_ar[i%storage_node_num][1]+"?block_no="+idx_array[i][0]
                         +"&offset="+idx_array[i][1]
                         +"&length="+idx_array[i][2];
-                        ToAdd += "<img onmouseenter='EnterEvent(this)' onmouseleave='LeaveEvent(this)' class='smallimg' src='"+src+"' id='img"+count+"'onclick='loadOnViewer(this)' style='cursor:pointer; border-style:solid; border-width:2px; border-color:black;'>";
+                    ToAdd += "<img onmouseenter='EnterEvent(this)' onmouseleave='LeaveEvent(this)' class='smallimg' src='"+src+"' id='img"+count+"'onclick='loadOnViewer(this)' style='cursor:pointer; border-style:solid; border-width:2px; border-color:black;'>";
                     count += 1;
                 }
                 //alert(ToAdd);
@@ -258,6 +258,8 @@
                 $('.smallimg').css('height', smallwid.toString()+"px");
                 //View image
                 wid  = $("#Viewer").css('width');
+                $("#ViewerImage").css('width', (parseInt(wid)*0.8).toString()+"px");
+                $("#ViewerImage").css('height', (parseInt(wid)*0.8).toString()+"px");
                 //var height = $("#Viewer").css('height');
                 //var length = Math.min(parseInt(width), parseInt(height));
                 //$("#Viewer").css('width' , length.toString()+"px");
@@ -276,5 +278,18 @@
                 //$("#downbt").css({'width':eachwid,'height':btheight});
             }
         </script>
-    </body>
+        <h4 class="ui inverted teal block center aligned header">
+            <div class="ui celled horizontal mini list" style="float:center">
+                <div class="item"><a href=""><FONT color="#FFFFFF">Why DIS?</FONT></a></div>
+                <div class="item"><a href=""><FONT color="#FFFFFF">FAQ</FONT></a></div>
+                <div class="item"><a href=""><FONT color="#FFFFFF">Spread the word</FONT></a></div>
+                <div class="item"><a href=""><FONT color="#FFFFFF">About Us</FONT></a></div>
+                <div class="item" id="contact" style="cursor:hand"><FONT color="#FFFFFF">Contact Us</FONT></div>
+                <div class="item"><a href=""><FONT color="#FFFFFF">Support</FONT></a></div>
+            </div>
+            <div class="ui field">
+                <FONT size="1em " color="#FFFFFF"><p>© 2015 <a href=" ">Tsinghua Univ</a> Computer Science Season Class Big Data Image Search.</p></FONT>
+            </div>
+        </h4>
+</body>
 </html>
