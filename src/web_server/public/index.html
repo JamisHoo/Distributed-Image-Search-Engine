@@ -14,30 +14,15 @@
         <meta name="mobile-web-app-capable" content="yes">
         <link rel="stylesheet" href="jquery-2.1.1.js"> 
         <link rel="stylesheet" href="jquery.lazyload.js">   
-        <style>
-            /*#view {
-                height:59.1vh;
-            }
-            #Viewer {
-                height:59.1vh;
-            }
-            #ViewerImage{
-                height:59.1vh;
-                width:30.2vw;
-            }
-            .smallimg{
-                height:11.7vh;
-                width:11.7vh;
-            }*/
-        </style>
     </head>
     <body onresize="Resize()">
         <input type="hidden" id="computing_node" value="COMPUTING_NODE_HOST">
         <input type="hidden" id="storage_node" value="STORAGE_NODE_HOST">
-        <h3 class="ui teal inverted menu">
+        <h3 class="ui teal inverted menu" style="margin-top:0;width:100vw">
             <div class="ui large action input">
-                <input type="text" placeholder="Search..." name="word" id="submittext" style="height:50px;overflow-x:auto;" autofocus>
-                <a class="ui blue button" id="SearchButton" onclick="Search()">Search<i class="search icon"></i></a>
+                &nbsp&nbsp<STRONG>Distributed Image Search</STRONG>&nbsp&nbsp
+                <input type="text" placeholder="Search..." name="word" id="submittext" style="width:50vw; height:6vh;" autofocus>
+                <a class="ui blue button" id="SearchButton" style=""onclick="Search()">Search<i class="search icon"></i></a>
             </div>
         </h3>
         <div class="ui horizontal icon divider"><i class="circular cloud icon"></i></div>
@@ -46,25 +31,25 @@
         </div>
         <div id="searchresult" style="display:none">
         <div class="ui three column grid">
-            <div class="five wide column" id="Choose_an_image">
+            <div class="two wide column"></div>
+            <div class="four wide column" id="Choose_an_image">
                 <div class="ui red header" style="display:inline"><i class="file outline icon"></i><STRONG>Choose</STRONG><div class="sub header">an image</div></div>
                 <div class="ui segment" style="overflow:scroll; display: inline-block;position:relative;" id="view" onScroll="viewscroll()">
-                    <div class="ui small images" id="image_container" > 
+                    <div class="ui small images" id="image_container" style="overflow-x:auto;  margin-left:auto;margin-right:auto;"> 
 
                     </div>
-                    <!--div id="loading" style="position:relative; "></div-->
                 </div>
                 
             </div>
-            <div class="six wide column">
+            <div class="four wide column">
                 <div class="ui red header" style="display:inline"><i class="zoom in icon"></i><STRONG>View</STRONG><div class="sub header"> image</div></div>
                 <div class="ui segment"  style="position:relative;" id="Viewer">
-                    <img  class="rounded ui image" src="" id="ViewerImage" style="position:absolute;margin:auto;top:0;left:0;right:0;bottom:0;">
+                    <img  class="rounded ui image" src="" id="ViewerImage" style="position:absolute; margin:auto;top:0;bottom:0;left:0;right:0;">
                 </div>
             </div>
-            <div class="five wide column">
+            <div class="four wide column">
                 <div class="ui red header" style="display:inline"><i class="cart icon"></i><STRONG>Use</STRONG><div class="sub header">it the way you want</div></div>
-                <div class="ui segment">
+                <div class="ui segment" id="Use">
                     <div class="ui red form segment" id="redform1">
                         <div class="inline fields">
                             <div class="ui black header" id="literal1">Image Download</div>
@@ -82,6 +67,7 @@
                     </div>
                 </div>
             </div>
+            <div class="two wide column"></div>
         </div>
         <input type="hidden" id="loaded_counter" value="0">
         <script>
@@ -93,7 +79,6 @@
                 g = d.getElementsByTagName('body')[0],
                 x = w.innerWidth || e.clientWidth || g.clientWidth,
                 y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-                //alert(x + ' × ' + y);
                 //input text width
                 $("#submittext").css("width", (parseInt(x)*0.4).toString() + "px");
             });
@@ -108,36 +93,28 @@
             var count;
             var last_click_id;
             function Search() {
-                //alert( $('#view').css('height') ) ;
                 $("#loaded_counter").val("0");
                 $("#image_container").html("");
                 $("#ViewerImage").attr("src","");
                 $("#DownloadImage").attr("src","");
                 $("#link_text").val("");
-                //var count = 0;
-                //var last_click_id;
                 count = 0;
                 word = "";
                 var computing_node = $("#computing_node").val();
-                //alert(computing_node);
                 var com_ar = computing_node.split(":");
                 //var sto_ar = storage_node.split(":");
-                //alert(computing_node);
                 if (computing_node) {
                     word = $("#submittext").val();
                     xmlHttp.open("GET", "http://"+com_ar[0]+":"+com_ar[1]+"?keywords="+word, false);
                     xmlHttp.send(null);
                     var result = xmlHttp.responseText ;
-                    alert(result);
                     if (result == "") {
-                        //alert("none!");
                         $("#noresult").css("display", "block");
                         $("#searchresult").css("display", "none");
                         return;
                     }
                     $("#noresult").css("display", "none");
                     $("#searchresult").css("display","block");
-                    console.log(result);
                     Submit(result);
                 }
             }
@@ -145,12 +122,9 @@
             var sto_ar, storage_node_num;
             function Submit(imageidx) {
                 var idxstring = String(imageidx);
-                //alert(idxstring)
                 var idx = idxstring.split(';');
-                //alert(idx.length);
                 idx_array = new Array(idx.length);
                 for (var i = 0 ; i < idx.length; ++i) {
-                    //idx_array[i] = new Array(3);
                     idx_array[i] = idx[i].split(',');
                 }
                 var storage_node_str  = $("#storage_node").val();
@@ -166,30 +140,20 @@
                 var curr = parseInt($("#loaded_counter").val());
                 var end = curr + N;
                 var ToAdd = "";
-                //alert(curr);
-                //alert(end);
                 if (end > idx_array.length)  end = idx_array.length-1;
-                console.log(curr + "," + end);
                 for (var i = curr; i <= end; ++i) {
                     var src = "http://"+sto_ar[i%storage_node_num][0]+":"+sto_ar[i%storage_node_num][1]+"?block_no="+idx_array[i][0]
                         +"&offset="+idx_array[i][1]
                         +"&length="+idx_array[i][2];
-                    console.log(src);
                     ToAdd += "<img onmouseenter='EnterEvent(this)' onmouseleave='LeaveEvent(this)' class='smallimg' src='"+src+"' id='img"+count+"'onclick='loadOnViewer(this)' style='cursor:pointer; border-style:solid; border-width:2px; border-color:black;'>";
                     count += 1;
                 }
-                //alert(ToAdd);
                 var now = $("#image_container").html(); 
                 $("#image_container").html(now + ToAdd); 
                 curr = end + N + 1;
                 $("#loaded_counter").val(String(curr));
                 $("#loading").html("");
                 $("#img0").click();  //focus on the first image
-
-                //$(".smallimg").css("width", '11.7vh');
-                //var y = $(".smallimg").css('height');
-                //var x = $(".smallimg").css('width');
-                //alert(y + "," + x);
             }
             function EnterEvent(img) {
                 if ($(img).css('border-color')!='green') 
@@ -219,13 +183,6 @@
                 var LINK=document.getElementById("link_text"); 
                 LINK.select(); 
                 document.execCommand("Copy");
-                /*$("#copybt").attr("class", "small ui red button");
-                $("#copybt").html("Copied");
-                setTimeout(function(){
-                    $("#copybt").attr("class", "small ui green button");
-                    $("#copybt").html("Copy");
-                    $("#link_text").blur();
-                }, 2000);*/
                 $("#copied").css("display", "inline");
                 setTimeout(function(){
                     $("#copied").css("display", "none");
@@ -235,21 +192,17 @@
             function viewscroll(){
                 var a=document.getElementById("view");
                 var f=a.clientHeight;
-                console.log("clientHeight:"+f);
                 var g=a.scrollTop;
-                console.log("scrollTop:"+g);
                 var h = a.scrollHeight;
-                console.log("scrollHeight:"+h);
-                if(f+g==h)
-                {
+                if(f+g==h) {
                     $("#loading").html("<div class='ui active inverted dimmer' ><div class='ui medium text loader'><STRONG>Loading</STRONG></div></div>");
-                    //alert("The end!");
                     load();
                 }
             }
             function Resize() {
                 //Choose an image frame
                 var five_column_width = $("#Choose_an_image").css("width");
+                $("#view").css("width", (parseInt(five_column_width)*0.8).toString()+"px");
                 $("#image_container").css("width", (parseInt(five_column_width)*0.8).toString()+"px");
                 //link_text
                 var Linkwid = (parseInt($('#redform2').css('width')) * 0.8).toString() + "px";
@@ -257,43 +210,47 @@
                 //Choose an image
                 var wid = $("#image_container").css('width');
                 var hei;
-                $("#view").css('height', (parseInt(wid)).toString()+"px");
+                $("#view").css('height', (parseInt(wid)*1.5).toString()+"px");
+                $("#Viewer").css('height', (parseInt(wid)*1.5).toString()+"px");
+
                 $("#ViewerImage").css('vertical-align', 'middle');
-                //var smallwid = Math.floor(parseInt(wid) / 5);
-                //$('.smallimg').css('width', smallwid.toString()+"px");
-                //$('.smallimg').css('height', smallwid.toString()+"px");
+                var smallwid = Math.floor(parseInt(wid) / 5);
+                $('.smallimg').css('width', smallwid.toString()+"px");
+                $('.smallimg').css('height', smallwid.toString()+"px");
                 //View image
                 wid  = $("#Viewer").css('width');
                 //adjust viewer image
-                var img = $("#img"+last_click_id);
-                var width = img.width, height = img.height;
-                width = width / 10;
-                height = height / 10;
-                var max;
-                if (width > height) {
-                    $(img).css("width", wid*0.9);
+                /*var addw = $("#Viewer").css("width");
+                var addh = $("#Viewer").css("height");
+                var ww = $("#ViewerImage").css("width");
+                var hh = $("#ViewerImage").css("height");
+                var addwint = parseFloat(addw);
+                var addhint = parseFloat(addh);
+                var wwint   = parseFloat(ww);
+                var hhint   = parseFloat(hh);
+                if (wwint > hhint) {
+                    var ratio = addwint / wwint;
+                    $("#ViewerImage").css("width", addw);
+                    $("#ViewerImage").css("height", (hhint*ratio).toString() + "px");
                 }
-                else {
-                    $(img).css("height", height*0.9);
-                }
+                else  {
+                    var ratio = addhint / hhint;
+                    $("#ViewerImage").css("width", (wwint*ratio).toString() + "px");
+                    $("#ViewerImage").css("height", addh);
+                }*/
                 //$("#ViewerImage").css('width', (parseInt(wid)*0.8).toString()+"px");
                 //$("#ViewerImage").css('height', (parseInt(wid)*0.8).toString()+"px");
                 //var height = $("#Viewer").css('height');
                 //var length = Math.min(parseInt(width), parseInt(height));
-                //$("#Viewer").css('width' , length.toString()+"px");
-                $("#Viewer").css('height', wid);
                 //Download Image
                 wid = $("#redform1").css('width');
                 hei = $("#redform2").css('height');
-                //$("#redform").css('height', (parseInt(wid)/3).toString()+"px");
                 var fontsize = (parseInt(wid) / 20).toString() + "px";
                 var eachwid  = (parseInt(wid) / 5).toString() + "px";
                 var btheight = (parseInt(wid) / 9).toString() + "px";
                 $("#literal1").css('fontSize', fontsize);
                 $("#literal2").css('fontSize', fontsize);
                 $("#DownloadImage").css({'width': eachwid, 'height': eachwid});
-                //$("#link_text").css('height', );
-                //$("#downbt").css({'width':eachwid,'height':btheight});
             }
         </script>
         <h4 class="ui inverted teal block center aligned header">
@@ -302,7 +259,7 @@
                 <div class="item"><a href=""><FONT color="#FFFFFF">FAQ</FONT></a></div>
                 <div class="item"><a href=""><FONT color="#FFFFFF">Spread the word</FONT></a></div>
                 <div class="item"><a href=""><FONT color="#FFFFFF">About Us</FONT></a></div>
-                <div class="item" id="contact" style="cursor:hand"><FONT color="#FFFFFF">Contact Us</FONT></div>
+                <div class="item" id="contact" style="cursor:hand"><a href=""><FONT color="#FFFFFF">Contact Us</FONT></a></div>
                 <div class="item"><a href=""><FONT color="#FFFFFF">Support</FONT></a></div>
             </div>
             <div class="ui field">
