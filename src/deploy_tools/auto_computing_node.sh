@@ -4,14 +4,15 @@
  #  Distributed under the MIT license 
  #  (See accompanying file LICENSE or copy at http://opensource.org/licenses/MIT)
  #  
- #  Project: 
+ #  Project: Distributed Image Search Engine
  #  Filename: auto_computing_node.sh 
  #  Version: 1.0
  #  Author: Jamis Hoo
  #  E-mail: hoojamis@gmail.com
  #  Date: Aug  5, 2015
  #  Time: 20:22:04
- #  Description: 
+ #  Description: run this script at a RHEL-based linux server
+ #               this script deploys computing server on the host
 ###############################################################################
 
 if [ "$EUID" -ne 0 ]; then

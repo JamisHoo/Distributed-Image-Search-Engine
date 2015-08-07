@@ -4,14 +4,14 @@
  #  Distributed under the MIT license 
  #  (See accompanying file LICENSE or copy at http://opensource.org/licenses/MIT)
  #  
- #  Project: 
+ #  Project: Distributed Image Search Engine
  #  Filename: auto_config.sh
  #  Version: 1.0
  #  Author: Jamis Hoo
  #  E-mail: hoojamis@gmail.com
  #  Date: Aug  4, 2015
  #  Time: 22:58:08
- #  Description: 
+ #  Description: this script does some fundamental installation and settings
 ###############################################################################
 
 if [ "$EUID" -ne 0 ]; then
