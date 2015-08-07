@@ -4,7 +4,7 @@
  #  Distributed under the MIT license 
  #  (See accompanying file LICENSE or copy at http://opensource.org/licenses/MIT)
  #  
- #  Project: 
+ #  Project: Distributed Image Search Engine
  #  Filename: compress.py 
  #  Version: 1.0
  #  Author: Jamis Hoo
