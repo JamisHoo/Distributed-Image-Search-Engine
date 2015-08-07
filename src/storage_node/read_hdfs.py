@@ -4,14 +4,14 @@
  #  Distributed under the MIT license 
  #  (See accompanying file LICENSE or copy at http://opensource.org/licenses/MIT)
  #  
- #  Project: 
+ #  Project: Distributed Image Search Engine
  #  Filename: read_hdfs.py 
  #  Version: 1.0
  #  Author: Jamis Hoo
  #  E-mail: hjm211324@gmail.com
  #  Date: Aug  2, 2015
  #  Time: 20:39:31
- #  Description: 
+ #  Description: this HTTP server accepts queries, extracts images and sends responses
 ###############################################################################
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import re
