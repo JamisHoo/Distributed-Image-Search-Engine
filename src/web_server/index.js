@@ -1,4 +1,18 @@
 #!/usr/bin/env node
+/******************************************************************************
+ *  Copyright (c) 2015 Jamis Hoo
+ *  Distributed under the MIT license 
+ *  (See accompanying file LICENSE or copy at http://opensource.org/licenses/MIT)
+ *  
+ *  Project: Distributed Image Search Engine
+ *  Filename: index.js
+ *  Version: 1.0
+ *  Author: Jamis Hoo
+ *  E-mail: hoojamis@gmail.com
+ *  Date: Aug  7, 2015
+ *  Time: 21:49:31
+ *  Description: master server
+ *****************************************************************************/
 
 var express = require("express");
 var fs = require("fs");
