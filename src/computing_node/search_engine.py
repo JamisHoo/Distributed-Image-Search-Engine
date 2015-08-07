@@ -4,14 +4,14 @@
  #  Distributed under the MIT license 
  #  (See accompanying file LICENSE or copy at http://opensource.org/licenses/MIT)
  #  
- #  Project: 
+ #  Project: Distributed Image Search Engine
  #  Filename: search_engine.py 
  #  Version: 1.0
  #  Author: Jamis Hoo
  #  E-mail: hoojamis@gmail.com
  #  Date: Aug  2, 2015
  #  Time: 14:41:10
- #  Description: 
+ #  Description: search web server process
 ###############################################################################
 from http.server import BaseHTTPRequestHandler 
 import re

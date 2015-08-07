@@ -4,14 +4,14 @@
  #  Distributed under the MIT license 
  #  (See accompanying file LICENSE or copy at http://opensource.org/licenses/MIT)
  #  
- #  Project: 
+ #  Project: Distributed Image Search Engine
  #  Filename: tcp_server.py 
  #  Version: 1.0
  #  Author: Jamis Hoo
  #  E-mail: hoojamis@gmail.com
  #  Date: Aug  2, 2015
  #  Time: 15:09:32
- #  Description: 
+ #  Description: tcp echo server
 ###############################################################################
 
 import socketserver

@@ -4,14 +4,14 @@
  #  Distributed under the MIT license 
  #  (See accompanying file LICENSE or copy at http://opensource.org/licenses/MIT)
  #  
- #  Project: 
+ #  Project: Distributed Image Search Engine
  #  Filename: new_process.py 
  #  Version: 1.0
  #  Author: Jamis Hoo
  #  E-mail: hoojamis@gmail.com
  #  Date: Aug  2, 2015
  #  Time: 15:46:39
- #  Description: 
+ #  Description: create new processes
 ###############################################################################
 
 from http.server import HTTPServer

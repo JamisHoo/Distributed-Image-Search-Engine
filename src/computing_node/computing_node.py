@@ -4,14 +4,14 @@
  #  Distributed under the MIT license 
  #  (See accompanying file LICENSE or copy at http://opensource.org/licenses/MIT)
  #  
- #  Project: 
+ #  Project: Distributed Image Search Engine
  #  Filename: computing_node.py 
  #  Version: 1.0
  #  Author: Jamis Hoo
  #  E-mail: hoojamis@gmail.com
  #  Date: Aug  2, 2015
  #  Time: 08:32:02
- #  Description: 
+ #  Description: computing node main programme
 ###############################################################################
 
 import multiprocessing
