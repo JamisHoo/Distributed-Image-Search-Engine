@@ -14,7 +14,7 @@ There are four components in this system.
 
   All storage nodes run on a HDFS which stores all images. Images are concatenated to be variable-sized blocks of up to 50GB. An image is uniquely identified by a triple of block number, offset and length. We call the triple *signature* of an image in later sections. 
   
-  Each storage node runs one or more web servers which accept HTTP request contains image signatures. Web server extracts images from HDFS according to the signatures and send them in response.
+  Each storage node runs one or more web servers which accept HTTP request containing image signatures. Web server extracts images from HDFS according to the signatures and send them in response.
     
 * computing nodes
   
