@@ -41,8 +41,6 @@ We wish to thank the following organizations or individuals, whose projects are 
 
 * [jQuery JavaScript Library](https://jquery.com/) developed by jQuery Foundation, Inc.
 
-* [Lazy Load](http://www.appelsiini.net/projects/lazyload) developed by Mika Tuupola
-
 * [Semantic UI](http://semantic-ui.com/) developed by Semantic Organization
 
 
